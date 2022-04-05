@@ -21,9 +21,9 @@ void SetupMap()
 }
 
 void PrintMap() {
-  for (int x = 0; x < gridSizeX; x++){
+  for (int y = 0; y < gridSizeY; y++){
     Serial.println();
-    for (int y = 0; y < gridSizeY; y++){
+    for (int x = 0; x < gridSizeX; x++){
       Tile t = tiles[x][y];
       if(t.isSolid) Serial.print("#");
       else          Serial.print(".");
