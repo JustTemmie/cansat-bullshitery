@@ -8,11 +8,11 @@ def print_game(input): #the print_game function is a function that takes in a st
     print(input) # this is a print statement that prints the input string to the screen in a pretty way
     
 
-
-if __name__ == '__main__':
-    #setup serial port for communication with the arduino
+# this is the main function that runs when you run the program, it's the first thing that gets run when you run your program and it's the first thing that gets run when you run your program. it's the first thing that gets run when you run your program. 
+if __name__ == '__main__': # this is a special keyword that tells python that if you run this file as a script, then run the main function
+    #setup serial port for communication with the arduino board.
     ser = serial.Serial("/dev/ttyACM0")  # open serial port that the arduino is connected to (this is the port that the arduino is connected to)
-    print(ser.name) # double check to make sure that the code is using the correct port or not
+    print(ser.name) # double check to make sure that the code is using the correct port or not using the correct port (this is the port that the arduino is connected to), this is just a check to make sure that the code is running correctly and that the code is running correctly
 
     while True: # this is a while loop that will run forever until the user hits ctrl+c to stop the program, or the program crashes for some reason
         data = input("Enter a string: ") #input is a function that takes in a string and returns a string that you can use to get input from the user and it's a good way to get input from the user

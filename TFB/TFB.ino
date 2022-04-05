@@ -9,7 +9,7 @@ Tile tiles [gridSizeX][gridSizeY];
 
 void setup() {
   Serial.begin(9600); // begin transmission
-  SetupMap();
+  SetupMap(); // setup the map
 }
 void loop() {
   Communicate();
@@ -27,7 +27,7 @@ void SetupMap()
 
 void PrintMap() {
   for (int y = 0; y < gridSizeY; y++){
-    Serial.println();
+    Serial.println(); // new line for each row of tiles in the grid (y).
     for (int x = 0; x < gridSizeX; x++){
       Tile t = tiles[x][y];
       if(t.isSolid) Serial.print(" # ");
