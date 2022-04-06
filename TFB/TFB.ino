@@ -13,7 +13,7 @@ int lLineCollum, rLineCollum;
 float ballX, ballY;
 int tileBallX, tileBallY;
 
-float angle = 45;
+float angle = 30;
 float speed = 1;
 float xVel, yVel;
 #define delayTime 150
@@ -25,13 +25,13 @@ int computerLineMove;
 void setup() {
   Serial.begin(9600); // begin transmission
   SetupMap();
-  pinMode(6, OUTPUT);
+  //pinMode(6, OUTPUT);
 }
 void loop() {
   delay(delayTime);
   MoveLines();
   MoveBall();
-  PrintMap();
+  //PrintMap();
   Communicate();
 }
 
@@ -124,6 +124,7 @@ void MoveLines()
 }
 
 void Communicate() {
+  Serial.println("Hello World!");
   String val;
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
