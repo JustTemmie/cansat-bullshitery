@@ -10,6 +10,7 @@ Tile tiles [gridSizeX][gridSizeY];
 void setup() {
   Serial.begin(9600); // begin transmission
   SetupMap();
+  pinMode(6, OUTPUT);
 }
 void loop() {
   Communicate();
@@ -43,5 +44,8 @@ void Communicate() {
   float n = val.toFloat();
   if (n != 0) {
     Serial.println(n); // send the received data back to raspberry pi
+    if(n == 6.0f){
+      digitalWrite(6, HIGH);
+    }
   }
 }
