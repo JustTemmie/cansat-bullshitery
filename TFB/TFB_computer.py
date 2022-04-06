@@ -1,88 +1,25 @@
-import time
-from pySerialTransfer import pySerialTransfer as txfer
+import serial # this, is a library, it's called serial - crazy
+from serial import Serial
 
+def main(): # declares a function with the name "main" this is because main is a really cool function name and it's objetively good to have a main function because it's the first thing that gets run when you run your program, but that's not what i'm gonna do so eh
+    pass # pass is a keyword that tells python to ignore the rest of the code in the function, so it doesn't run it
 
-if __name__ == '__main__':
-    try:
-        link = txfer.SerialTransfer('COM17')
-        
-        link.open()
-        time.sleep(2) # allow some time for the Arduino to completely reset
-        
-        while True:
-            send_size = 0
-            
-            ###################################################################
-            # Send a list
-            ###################################################################
-            list_ = [1, 3]
-            list_size = link.tx_obj(list_)
-            send_size += list_size
-            
-            ###################################################################
-            # Send a string
-            ###################################################################
-            str_ = 'hello'
-            str_size = link.tx_obj(str_, send_size) - send_size
-            send_size += str_size
-            
-            ###################################################################
-            # Send a float
-            ###################################################################
-            float_ = 5.234
-            float_size = link.tx_obj(float_, send_size) - send_size
-            send_size += float_size
-            
-            ###################################################################
-            # Transmit all the data to send in a single packet
-            ###################################################################
-            link.send(send_size)
-            
-            ###################################################################
-            # Wait for a response and report any errors while receiving packets
-            ###################################################################
-            while not link.available():
-                if link.status < 0:
-                    if link.status == -1:
-                        print('ERROR: CRC_ERROR')
-                    elif link.status == -2:
-                        print('ERROR: PAYLOAD_ERROR')
-                    elif link.status == -3:
-                        print('ERROR: STOP_BYTE_ERROR')
-            
-            ###################################################################
-            # Parse response list
-            ###################################################################
-            rec_list_  = link.rx_obj(obj_type=type(list_),
-                                     obj_byte_size=list_size,
-                                     list_format='i')
-            
-            ###################################################################
-            # Parse response string
-            ###################################################################
-            rec_str_   = link.rx_obj(obj_type=type(str_),
-                                     obj_byte_size=str_size,
-                                     start_pos=list_size)
-            
-            ###################################################################
-            # Parse response float
-            ###################################################################
-            rec_float_ = link.rx_obj(obj_type=type(float_),
-                                     obj_byte_size=float_size,
-                                     start_pos=(list_size + str_size))
-            
-            ###################################################################
-            # Display the received data
-            ###################################################################
-            print('SENT: {} {} {}'.format(list_, str_, float_))
-            print('RCVD: {} {} {}'.format(rec_list_, rec_str_, rec_float_))
-            print(' ')
+def print_game(input): #the print_game function is a function that takes in a string and prints the game state to the screen in a pretty way so that the user(s) can see what's going on
+    print(input) # this is a print statement that prints the input string to the screen in a pretty way
     
-    except KeyboardInterrupt:
-        link.close()
-    
-    except:
-        import traceback
-        traceback.print_exc()
-        
-        link.close()
+
+# this is the main function that runs when you run the program, it's the first thing that gets run when you run your program and it's the first thing that gets run when you run your program. it's the first thing that gets run when you run your program. 
+if __name__ == '__main__': # this is a special keyword that tells python that if you run this file as a script, then run the main function
+    #setup serial port for communication with the arduino board.
+    ser = serial.Serial("/dev/ttyACM0")  # open serial port that the arduino is connected to (this is the port that the arduino is connected to)
+    print(ser.name) # double check to make sure that the code is using the correct port or not using the correct port (this is the port that the arduino is connected to), this is just a check to make sure that the code is running correctly and that the code is running correctly
+
+    while True: # this is a while loop that will run forever until the user hits ctrl+c to stop the program, or the program crashes for some reason
+        data = input("Enter a string: ") #input is a function that takes in a string and returns a string that you can use to get input from the user and it's a good way to get input from the user
+        print(data)
+
+        try: # try is a keyword that tells python to try to run the code in the try block, if it fails it will run the code in the except block instead
+            ser.write(data.encode()) # encode is a function that takes in a string and returns a byte string that you can use to send data to the arduino
+        except: # this is the except block, it will run if the code in the try block fails to run correctly - it's a good way to handle errors in your code
+            ser.close() # close is a function that closes the serial port so that it can be used again later, or like something
+            print("Error") # this is a print statement that prints the error message to the screen
