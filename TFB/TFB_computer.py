@@ -1,25 +1,41 @@
-import serial # this, is a library, it's called serial - crazy
+import serial
 from serial import Serial
 
-def main(): # declares a function with the name "main" this is because main is a really cool function name and it's objetively good to have a main function because it's the first thing that gets run when you run your program, but that's not what i'm gonna do so eh
-    pass # pass is a keyword that tells python to ignore the rest of the code in the function, so it doesn't run it
+import time
 
-def print_game(input): #the print_game function is a function that takes in a string and prints the game state to the screen in a pretty way so that the user(s) can see what's going on
-    print(input) # this is a print statement that prints the input string to the screen in a pretty way
+def main(): 
+    pass 
+
+def print_game(input): 
+    print(input)
     
 
-# this is the main function that runs when you run the program, it's the first thing that gets run when you run your program and it's the first thing that gets run when you run your program. it's the first thing that gets run when you run your program. 
-if __name__ == '__main__': # this is a special keyword that tells python that if you run this file as a script, then run the main function
-    #setup serial port for communication with the arduino board.
-    ser = serial.Serial("/dev/ttyACM0")  # open serial port that the arduino is connected to (this is the port that the arduino is connected to)
-    print(ser.name) # double check to make sure that the code is using the correct port or not using the correct port (this is the port that the arduino is connected to), this is just a check to make sure that the code is running correctly and that the code is running correctly
+if __name__ == '__main__': 
+    n = 0
+    funny = "1"
+    
+    ser = serial.Serial("/dev/ttyUSB0", 9600)
+    time.sleep(0.4)
+    print(ser.name)
+    
+    ser.flushInput()
 
-    while True: # this is a while loop that will run forever until the user hits ctrl+c to stop the program, or the program crashes for some reason
-        data = input("Enter a string: ") #input is a function that takes in a string and returns a string that you can use to get input from the user and it's a good way to get input from the user
-        print(data)
-
-        try: # try is a keyword that tells python to try to run the code in the try block, if it fails it will run the code in the except block instead
-            ser.write(data.encode()) # encode is a function that takes in a string and returns a byte string that you can use to send data to the arduino
-        except: # this is the except block, it will run if the code in the try block fails to run correctly - it's a good way to handle errors in your code
-            ser.close() # close is a function that closes the serial port so that it can be used again later, or like something
-            print("Error") # this is a print statement that prints the error message to the screen
+    while True:
+        time.sleep(0.2)
+        ser_bytes = ser.readline()
+        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+        print(decoded_bytes)
+        
+        #n += 1
+        #time.sleep(0.05)
+        
+        ser.write(funny.encode())
+        #print("sent " + str(funny))
+        #n = 0
+        
+        
+        #try:   
+        #    ser.write(data.encode()) # encode is a function that takes in a string and returns a byte string that you can use to send data to the arduino
+        #except:
+        #    ser.close() 
+        #    print("Error") 
