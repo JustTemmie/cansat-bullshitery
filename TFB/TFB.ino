@@ -31,7 +31,7 @@ void loop() {
   delay(delayTime);
   MoveLines();
   MoveBall();
-  //PrintMap();
+  PrintMap();
   Communicate();
 }
 
@@ -77,7 +77,7 @@ void SetupBall(){
   MoveBall();
 }
 
-void PrintMap() {
+void PrintMap() { //solely for debugging
   for (int y = 0; y < gridSizeY; y++){
     Serial.println(); // new line for each row of tiles in the grid (y).
     for (int x = 0; x < gridSizeX; x++){
@@ -101,10 +101,10 @@ void MoveBall(){
   if(tiles[nextYPos][tileBallX].isSolid) {
     yVel *= -1;
   }
-
+  //move the ball
   ballX += xVel;
   ballY += yVel;
-  
+  //set the tile representing the ball to the ball's closest tile
   tileBallX = (int)(ballX+0.5f);
   tileBallY = (int)(ballY+0.5f);
 
@@ -113,18 +113,25 @@ void MoveBall(){
 
 void MoveLines()
 {
-  for (int i = 0; i < lineWidth; i++){
-    tiles[lLineCollum][lLineTiles[i]].isSolid = false;
-    if((lLineTiles[0] == 1 && computerLineMove == 1) ||
-        lLineTiles[lineWidth-1] == gridSizeY-2 && computerLineMove == -1) lLineTiles[i]-=computerLineMove;
-        
-    tiles[lLineCollum][lLineTiles[i]].isSolid = true;
+  bool atEdge = false;
+
+  // check if it's trying to move into a wall)
+  atEdge =  (lLineTiles[0] == 1 && computerLineMove == 1) ||
+            (lLineTiles[lineWidth-1] == gridSizeY-2 && computerLineMove == -1);
+
+  if(!atEdge)
+  {
+    for (int i = 0; i < lineWidth; i++){
+      tiles[lLineCollum][lLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
+      lLineTiles[i]-=computerLineMove; // move tiles based on input
+      tiles[lLineCollum][lLineTiles[i]].isSolid = true; // enable the new tiles       
+    }
   }
   computerLineMove = 0;
 }
 
 void Communicate() {
-  Serial.println("Hello World!");
+  //Serial.println("Hello World!");
   String val;
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
