@@ -39,6 +39,8 @@ void setup() {
   //InitGPS();
 
   Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude");
+  Serial.println("pong");
+  Serial.println("PongCallsign, BallPos, BallAngle, CansatPaddlePos, GroundPaddlePos");
 }
 
 void InitBMP() {
