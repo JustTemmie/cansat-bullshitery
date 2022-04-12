@@ -21,6 +21,8 @@ float xVel, yVel;
 int lLineTiles [lineWidth];
 int rLineTiles [lineWidth];
 int computerLineMove;
+int lLinePos;
+int rLinePos;
 
 void setup() {
   Serial.begin(9600); // begin transmission
@@ -28,9 +30,9 @@ void setup() {
   //pinMode(6, OUTPUT);
 }
 void loop() {
-  delay(delayTime);
   MoveLines();
   MoveBall();
+  delay(delayTime);
   PrintMap();
   Communicate();
 }
@@ -52,6 +54,11 @@ void InstertLines()
   lLineCollum = lineFromWall-1;
   rLineCollum = gridSizeX - lineFromWall;
 
+  // set position of the lines to the middle tile
+  int middleTile = gridSizeY/2;
+  lLinePos = middleTile; rLinePos = middleTile;
+  computerLineMove = lLinePos;
+
   int distFromEdge = (gridSizeY-lineWidth)/2; // finds how far the lines will be from the edges
 
   int i = 0;
@@ -61,6 +68,7 @@ void InstertLines()
       lLineTiles[i] = y;
       tiles[rLineCollum][y].isSolid = true;
       rLineTiles[i] = y;
+
       i++;
     }
   }
@@ -113,21 +121,12 @@ void MoveBall(){
 
 void MoveLines()
 {
-  bool atEdge = false;
-
-  // check if it's trying to move into a wall)
-  atEdge =  (lLineTiles[0] == 1 && computerLineMove == 1) ||
-            (lLineTiles[lineWidth-1] == gridSizeY-2 && computerLineMove == -1);
-
-  if(!atEdge)
-  {
-    for (int i = 0; i < lineWidth; i++){
-      tiles[lLineCollum][lLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
-      lLineTiles[i]-=computerLineMove; // move tiles based on input
-      tiles[lLineCollum][lLineTiles[i]].isSolid = true; // enable the new tiles       
-    }
+  for (int i = 0; i < lineWidth; i++){
+    tiles[lLineCollum][lLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
+    lLineTiles[i] -= lLinePos-computerLineMove; // move tiles based on input
+    tiles[lLineCollum][lLineTiles[i]].isSolid = true; // enable the new tiles       
   }
-  computerLineMove = 0;
+  lLinePos = computerLineMove;
 }
 
 void Communicate() {
