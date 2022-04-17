@@ -29,7 +29,15 @@ void setup() {
   Serial.begin(9600); // begin transmission
   SetupMap();
   //pinMode(6, OUTPUT);
+  Serial.println();
   Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, CansatPaddlePos, GroundPaddlePos");
+  PrintMapData();
+}
+void PrintMapData()
+{
+  Serial.print("Grid Size X = "); Serial.println(gridSizeX);
+  Serial.print("Grid Size Y = "); Serial.println(gridSizeY);
+  Serial.print("Line Size = "); Serial.println(lineWidth);
 }
 void loop() {
   MoveLines();
