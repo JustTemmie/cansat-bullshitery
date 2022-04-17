@@ -10,7 +10,7 @@ Tile tiles [gridSizeX][gridSizeY];
 int lLineCollum, rLineCollum;
 #define lineFromWall 4
 #define lineWidth 5
-float ballX, ballY;
+float ballX = 0, ballY = 0;
 int tileBallX, tileBallY;
 
 float angle = 30;
@@ -21,6 +21,7 @@ float xVel, yVel;
 int lLineTiles [lineWidth];
 int rLineTiles [lineWidth];
 int computerLineMove;
+int desiredAiPos;
 int lLinePos;
 int rLinePos;
 
@@ -28,13 +29,23 @@ void setup() {
   Serial.begin(9600); // begin transmission
   SetupMap();
   //pinMode(6, OUTPUT);
+  Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, CansatPaddlePos, GroundPaddlePos");
 }
 void loop() {
   MoveLines();
   MoveBall();
   delay(delayTime);
-  PrintMap();
+  //PrintMap();
   Communicate();
+
+  float d[] = {
+    ballX,
+    ballY,
+    angle,
+    desiredAiPos,
+    computerLineMove
+  };
+  PrintBallInfo(d);
 }
 
 void SetupMap()
@@ -46,7 +57,7 @@ void SetupMap()
   }
   InstertLines();
   SetupBall();
-  PrintMap();
+  //PrintMap();
 }
 void InstertLines()
 {
@@ -121,12 +132,34 @@ void MoveBall(){
 
 void MoveLines()
 {
+  #pragma region groundLine  
   for (int i = 0; i < lineWidth; i++){
     tiles[lLineCollum][lLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
     lLineTiles[i] -= lLinePos-computerLineMove; // move tiles based on input
     tiles[lLineCollum][lLineTiles[i]].isSolid = true; // enable the new tiles       
   }
   lLinePos = computerLineMove;
+  #pragma endregion groundLine
+  #pragma region aiLine
+  desiredAiPos = tileBallY;
+  for (int i = 0; i < lineWidth; i++){
+    if(i != 0 != lineWidth-1)tiles[rLineCollum][rLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
+    rLineTiles[i] -= rLinePos-desiredAiPos; // move tiles based on input
+    tiles[rLineCollum][rLineTiles[i]].isSolid = true; // enable the new tiles       
+  }
+  rLinePos = desiredAiPos;
+  #pragma endregion aiLine
+}
+
+void PrintBallInfo(float data[]){
+  Serial.println();
+  Serial.print("TFB");
+
+  for(int i = 0; i < 5; i++)
+  {
+    Serial.print(", ");
+    Serial.print(data[i]);
+  }
 }
 
 void Communicate() {
