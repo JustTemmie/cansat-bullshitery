@@ -4,8 +4,15 @@ from serial import Serial
 import time
 import random
 
+print_axis = True
+debug_info = False
+chonk_mode = True
+
 rows = 15
 cols = 15
+
+score_TFB = 0
+score_TSB = 0
 
 arr = [[" " for i in range(rows)] for j in range(cols)]
 
@@ -42,17 +49,35 @@ def write_paddles(TFB, TSB):
                     write(11, u, "I")
             
 
-
+def add_visual_data(row, a):
+    for i in arr[a]:
+        row += str(i)
+        if chonk_mode: row += str(i)
+        if i != "x" and i != "--" and i != "|": 
+            row += " "
+            if chonk_mode: row += " "
+    return row
+    
 def print_game():
     for a in range(0, rows):
         row = ""
-        for i in arr[a]:
-            row += str(i)
-            if i != "x" and i != "--" and i != "|": 
-                row += " "
-        print(row, a)
-    
-    print("0,1,2,3,4,5,6,7,8,9,0,1,2,3,4")
+        row += add_visual_data(row, a)
+
+                             
+        if print_axis: print(row, a)
+        else: print(row)
+        
+        if chonk_mode:
+            if print_axis: print(row, a)
+            else: print(row)
+
+    if print_axis:
+        if chonk_mode:
+            print("0   1  2   3  4   5   6   7   8   9   10  11  12  13  14")
+        else:
+            print("0  2,  4  6,  8  10 , 12  14")
+        
+        print("(the x axis is only semi-accurate)")
     
 
 if __name__ == '__main__': 
@@ -78,8 +103,7 @@ if __name__ == '__main__':
         array = decoded_bytes.split(",")
         
         
-        print(array)
-        
+    
         try:
             write(float(array[1]), float(array[2]), "O") # ball x and y
             write_paddles(round(float(array[4])), round(float(array[5]))) # TFB and TSB
@@ -94,28 +118,41 @@ if __name__ == '__main__':
                 pos += 1
             else:
                 pos += 0
-
         except:
             print("could not understand the input")
         
+
+        try:
+            if round(float(array[1])) == 1:
+                score_TSB += 1
+            elif round(float(array[1])) == cols-2:
+                score_TFB += 1
+        
+        except:
+            pass
+
+       
         #if pos < 13:
         #    pos += 1
         #else:
         #    pos = 2
         
-        try:
-            print(f"desired position = {pos}, current position = {array[5]}")
-            #ser.write(str(pos).encode())
-            pass
-        except:
-            pass
-    
+        if debug_info:
+            print(array)
+            try:
+                print(f"desired position = {pos}, current position = {array[5]}")
+                #ser.write(str(pos).encode())
+                pass
+            except:
+                pass
+        
         try:
             ser.write(str(pos).encode())
         except:
             print("failed to write to TFB")
         
         #time.sleep(0.5)
+        print(f"TFB score = {score_TFB} and TSB score = {score_TSB}")
         print_game()
         #print("sent " + str(funny))
         #n = 0
