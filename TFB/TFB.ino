@@ -10,10 +10,11 @@ Tile tiles [gridSizeX][gridSizeY];
 int lLineCollum, rLineCollum;
 #define lineFromWall 4
 #define lineWidth 5
+#define lineChonk 2
 float ballX = 0, ballY = 0;
 int tileBallX, tileBallY;
 
-float angle = 30;
+float angle = 45;
 float speed = 1;
 float xVel, yVel;
 #define delayTime 150
@@ -151,6 +152,7 @@ void MoveLines()
 
   #pragma region aiLine
   desiredAiPos = tileBallY;
+  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk)
   for (int j = 0; j < lineWidth; j++){
     tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
     rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
