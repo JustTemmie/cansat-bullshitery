@@ -26,6 +26,8 @@ int desiredAiPos;
 int lLinePos;
 int rLinePos;
 
+#define comCallsign "TSB, "
+
 void setup() {
   Serial.begin(9600); // begin transmission
   SetupMap();
@@ -179,9 +181,14 @@ void Communicate() {
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
   }
-  float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
-  if (n != 0) {
-    computerLineMove = (int)n;
-    Serial.print(computerLineMove);
+  bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
+  if(containsCallsign)
+  {
+    val.remove(0, 5);
+    float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
+    if (n != 0) {
+      computerLineMove = (int)n;
+      Serial.print(n);
+    }
   }
 }

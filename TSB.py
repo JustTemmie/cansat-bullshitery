@@ -8,7 +8,7 @@ print_axis = True
 debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 
-device = "/dev/ttyACM0"
+device = "COM3"
 ser_rate = 9600
 
 ball = "😳"
