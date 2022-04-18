@@ -10,7 +10,7 @@ Tile tiles [gridSizeX][gridSizeY];
 int lLineCollum, rLineCollum;
 #define lineFromWall 4
 #define lineWidth 5
-float ballX, ballY;
+float ballX = 0, ballY = 0;
 int tileBallX, tileBallY;
 
 float angle = 30;
@@ -21,18 +21,39 @@ float xVel, yVel;
 int lLineTiles [lineWidth];
 int rLineTiles [lineWidth];
 int computerLineMove;
+int desiredAiPos;
+int lLinePos;
+int rLinePos;
 
 void setup() {
   Serial.begin(9600); // begin transmission
   SetupMap();
   //pinMode(6, OUTPUT);
+  Serial.println();
+  Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, CansatPaddlePos, GroundPaddlePos");
+  PrintMapData();
+}
+void PrintMapData()
+{
+  Serial.print("Grid Size X = "); Serial.println(gridSizeX);
+  Serial.print("Grid Size Y = "); Serial.println(gridSizeY);
+  Serial.print("Line Size = "); Serial.println(lineWidth);
 }
 void loop() {
-  delay(delayTime);
   MoveLines();
   MoveBall();
+  delay(delayTime);
   //PrintMap();
   Communicate();
+
+  float d[] = {
+    ballX,
+    ballY,
+    angle,
+    desiredAiPos,
+    computerLineMove
+  };
+  PrintBallInfo(d);
 }
 
 void SetupMap()
@@ -44,13 +65,18 @@ void SetupMap()
   }
   InstertLines();
   SetupBall();
-  PrintMap();
+  //PrintMap();
 }
 void InstertLines()
 {
   // set the collums where the lines will be placed
   lLineCollum = lineFromWall-1;
   rLineCollum = gridSizeX - lineFromWall;
+
+  // set position of the lines to the middle tile
+  int middleTile = gridSizeY/2;
+  lLinePos = middleTile; rLinePos = middleTile;
+  computerLineMove = lLinePos;
 
   int distFromEdge = (gridSizeY-lineWidth)/2; // finds how far the lines will be from the edges
 
@@ -61,6 +87,7 @@ void InstertLines()
       lLineTiles[i] = y;
       tiles[rLineCollum][y].isSolid = true;
       rLineTiles[i] = y;
+
       i++;
     }
   }
@@ -77,7 +104,7 @@ void SetupBall(){
   MoveBall();
 }
 
-void PrintMap() {
+void PrintMap() { //solely for debugging
   for (int y = 0; y < gridSizeY; y++){
     Serial.println(); // new line for each row of tiles in the grid (y).
     for (int x = 0; x < gridSizeX; x++){
@@ -101,10 +128,10 @@ void MoveBall(){
   if(tiles[nextYPos][tileBallX].isSolid) {
     yVel *= -1;
   }
-
+  //move the ball
   ballX += xVel;
   ballY += yVel;
-  
+  //set the tile representing the ball to the ball's closest tile
   tileBallX = (int)(ballX+0.5f);
   tileBallY = (int)(ballY+0.5f);
 
@@ -113,18 +140,38 @@ void MoveBall(){
 
 void MoveLines()
 {
+  #pragma region groundLine  
   for (int i = 0; i < lineWidth; i++){
-    tiles[lLineCollum][lLineTiles[i]].isSolid = false;
-    if((lLineTiles[0] == 1 && computerLineMove == 1) ||
-        lLineTiles[lineWidth-1] == gridSizeY-2 && computerLineMove == -1) lLineTiles[i]-=computerLineMove;
-        
-    tiles[lLineCollum][lLineTiles[i]].isSolid = true;
+    tiles[lLineCollum][lLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
+    lLineTiles[i] -= lLinePos-computerLineMove; // move tiles based on input
+    tiles[lLineCollum][lLineTiles[i]].isSolid = true; // enable the new tiles       
   }
-  computerLineMove = 0;
+  lLinePos = computerLineMove;
+  #pragma endregion groundLine
+  #pragma region aiLine
+  desiredAiPos = tileBallY;
+  for (int i = 0; i < lineWidth; i++){
+    if(i != 0 != lineWidth-1)tiles[rLineCollum][rLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
+    rLineTiles[i] -= rLinePos-desiredAiPos; // move tiles based on input
+    tiles[rLineCollum][rLineTiles[i]].isSolid = true; // enable the new tiles       
+  }
+  rLinePos = desiredAiPos;
+  #pragma endregion aiLine
+}
+
+void PrintBallInfo(float data[]){
+  Serial.println();
+  Serial.print("TFB");
+
+  for(int i = 0; i < 5; i++)
+  {
+    Serial.print(", ");
+    Serial.print(data[i]);
+  }
 }
 
 void Communicate() {
-  Serial.println("Hello World!");
+  //Serial.println("Hello World!");
   String val;
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
