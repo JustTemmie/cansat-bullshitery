@@ -152,7 +152,7 @@ void MoveLines()
   #pragma region aiLine
   desiredAiPos = tileBallY;
   for (int j = 0; j < lineWidth; j++){
-    if(j != 0 != lineWidth-1)tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
+    tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
     rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
     tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
   }
