@@ -4,13 +4,14 @@ from serial import Serial
 import time
 import random
 
-print_axis = True
+print_axis = False
 debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
+print_map = False
 
-device = "/dev/ttyACM1"
-output_device = "/dev/ttyUSB0"
-print_output = False
+device = "/dev/ttyACM0"
+input_device = "/dev/ttyUSB0"
+use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
 ball = "😳"
@@ -26,6 +27,7 @@ paddle_chonk = 2 # having a paddle chonk of 2 would mean the paddle is 5 tall, t
 
 score_TFB = 0
 score_TSB = 0
+input_loop = 0
 
 #declare a 2D array, this is used instead of a normal 1D array as the game is 2D and it's waaay easier
 arr = [[" " for i in range(rows)] for j in range(cols)]
@@ -104,6 +106,7 @@ def print_game():
             if print_axis: print(row, a)
             else: print(row)
 
+
     #displays the axis after the board is finished printing
     if print_axis:
         if chonk_mode:
@@ -114,6 +117,26 @@ def print_game():
         print("(the x axis is only semi-accurate)")
     
 
+def get_input(device):
+    ser_bytes = device.readline()
+    
+    #decodes the input into a string and removes some garbage
+    decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+    
+    #splits the input at every point where it sees a comma
+    #this is done so that the script can very easily use the incoming data
+    #for example i can just ask what array[1] is and it will return the X position for the ball
+    array = decoded_bytes.split(",")
+    
+    if array[0] == "TFB": 
+        if array != None:
+            print(array)
+            return array
+
+    get_input(device)
+    
+    
+    
 if __name__ == '__main__': 
     clear_board()
 
@@ -124,8 +147,10 @@ if __name__ == '__main__':
     
     #initialize serial
     ser = serial.Serial(device, ser_rate)
-    if print_output:
-        ser_output = serial.Serial(output_device, ser_rate)
+    if use_device_as_input:
+        ser_input = serial.Serial(device, ser_rate)
+    else:
+        ser_input = serial.Serial(input_device, ser_rate)
     time.sleep(0.4)
     print(ser.name)
     
@@ -134,38 +159,43 @@ if __name__ == '__main__':
     
 
     
-    while True:
+    while True:        
+        
         clear_board()
-        time.sleep(0.14)
-        ser_bytes = ser.readline()
-        #decodes the input into a string and removes some garbage
-        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
-        
-        #splits the input at every point where it sees a comma
-        #this is done so that the script can very easily use the incoming data
-        #for example i can just ask what array[1] is and it will return the X position for the ball
-        array = decoded_bytes.split(",")
+        time.sleep(0.)
         
         
-    
+        array = get_input(ser_input)
+        print(array)
+        
+        time.sleep(0.04)
+        
+        
         try:
+            #print(array[2])
             write_ball(float(array[1]), float(array[2]))
             write_paddles(round(float(array[5])), round(float(array[4]))) # TSB and TFB
         except:
-            pass
-            #print("error in trying to update the board")
+            print("error in trying to update the board")
+            #pass
         
         try:
             #checks where the ball is relative to the player's paddle
+            
             #also double checks that it's not moving the paddle out of bounds
+            print("a")
+            print(array[2])
+            print(round(float(array[2])))
+            print("c")
             if round(float(array[2])) < pos and pos > paddle_chonk+1:
                 pos -= 1
             elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
                 pos += 1
             else:
                 pos += 0
+            print("b")
         except:
-            print("could not understand the input")
+            print(f"could not understand the input, array = {array}")
         
 
         try:
@@ -189,16 +219,19 @@ if __name__ == '__main__':
             except:
                 pass
         
+        output = f"TSB, {pos}"
+        print(output)
         try:
-            if print_output:
-                output_device.write(str(pos).encode())
-            else:
-                ser.write(str(pos).encode())
+            ser.write(output.encode())
         except:
             print("failed whilst writing to TDB")
         
 
 
         #prints the score and the game board
-        print(f"TFB score = {score_TFB} and TSB score = {score_TSB}")
-        print_game()
+        
+        if print_map:
+            print(f"TFB score = {score_TFB} and TSB score = {score_TSB}")
+            print_game()
+        else:
+            print("-------------------------------------------------------------------------")
