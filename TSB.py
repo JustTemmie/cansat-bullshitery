@@ -15,11 +15,11 @@ use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
 ball = "😳"
-skip_ball_offset = True # some balls like the 😳 emoji for example, are actually twice the width of a normal character, if the ball you're using is two wide turn this to True
 topbottom = "--"
 sides = "|"
 corner = "x"
 paddles = "I"
+skip_ball_offset = True # some balls like the 😳 emoji for example, are actually twice the width of a normal character, if the ball you're using is two wide turn this to True
 
 rows = 15
 cols = 15
@@ -27,7 +27,6 @@ paddle_chonk = 2 # having a paddle chonk of 2 would mean the paddle is 5 tall, t
 
 score_TFB = 0
 score_TSB = 0
-input_loop = 0
 
 #declare a 2D array, this is used instead of a normal 1D array as the game is 2D and it's waaay easier
 arr = [[" " for i in range(rows)] for j in range(cols)]
