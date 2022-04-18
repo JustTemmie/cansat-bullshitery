@@ -20,7 +20,7 @@ paddles = "I"
 
 rows = 15
 cols = 15
-paddle_chonk = 5 # having a paddle chonk of 2 would mean the paddle is 5 tall, the main point with two over and two under
+paddle_chonk = 2 # having a paddle chonk of 2 would mean the paddle is 5 tall, the main point with two over and two under
 
 score_TFB = 0
 score_TSB = 0
