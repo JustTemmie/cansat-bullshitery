@@ -180,6 +180,6 @@ void Communicate() {
   float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
   if (n != 0) {
     computerLineMove = (int)n;
-    Serial.print(computerLineMove);
+    //Serial.print(computerLineMove);
   }
 }

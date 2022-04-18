@@ -8,7 +8,9 @@ print_axis = True
 debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 
-device = "/dev/ttyACM0"
+device = "/dev/ttyACM1"
+output_device = "/dev/ttyUSB0"
+print_output = False
 ser_rate = 9600
 
 ball = "😳"
@@ -122,6 +124,8 @@ if __name__ == '__main__':
     
     #initialize serial
     ser = serial.Serial(device, ser_rate)
+    if print_output:
+        ser_output = serial.Serial(output_device, ser_rate)
     time.sleep(0.4)
     print(ser.name)
     
@@ -132,7 +136,7 @@ if __name__ == '__main__':
     
     while True:
         clear_board()
-        time.sleep(0.1)
+        time.sleep(0.14)
         ser_bytes = ser.readline()
         #decodes the input into a string and removes some garbage
         decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
@@ -146,7 +150,7 @@ if __name__ == '__main__':
     
         try:
             write_ball(float(array[1]), float(array[2]))
-            write_paddles(round(float(array[4])), round(float(array[5]))) # TFB and TSB
+            write_paddles(round(float(array[5])), round(float(array[4]))) # TSB and TFB
         except:
             pass
             #print("error in trying to update the board")
@@ -179,16 +183,19 @@ if __name__ == '__main__':
         if debug_info:
             print(array)
             try:
-                print(f"desired position = {pos}, current position = {array[5]}")
+                print(f"desired position = {pos}, current position = {array[4]}")
                 #ser.write(str(pos).encode())
                 pass
             except:
                 pass
         
         try:
-            ser.write(str(pos).encode())
+            if print_output:
+                output_device.write(str(pos).encode())
+            else:
+                ser.write(str(pos).encode())
         except:
-            print("failed whilst writing to TFB")
+            print("failed whilst writing to TDB")
         
 
 
