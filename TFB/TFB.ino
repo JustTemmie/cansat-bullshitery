@@ -30,7 +30,7 @@ void setup() {
   SetupMap();
   //pinMode(6, OUTPUT);
   Serial.println();
-  Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, CansatPaddlePos, GroundPaddlePos");
+  Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, GroundPaddlePos, CansatPaddlePos");
   PrintMapData();
 }
 void PrintMapData()
@@ -50,8 +50,8 @@ void loop() {
     ballX,
     ballY,
     angle,
-    desiredAiPos,
-    computerLineMove
+    computerLineMove,
+    desiredAiPos
   };
   PrintBallInfo(d);
 }
@@ -148,12 +148,13 @@ void MoveLines()
   }
   lLinePos = computerLineMove;
   #pragma endregion groundLine
+
   #pragma region aiLine
   desiredAiPos = tileBallY;
-  for (int i = 0; i < lineWidth; i++){
-    if(i != 0 != lineWidth-1)tiles[rLineCollum][rLineTiles[i]].isSolid = false; // disable the tiles for the line temporarily
-    rLineTiles[i] -= rLinePos-desiredAiPos; // move tiles based on input
-    tiles[rLineCollum][rLineTiles[i]].isSolid = true; // enable the new tiles       
+  for (int j = 0; j < lineWidth; j++){
+    if(j != 0 != lineWidth-1)tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
+    rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
+    tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
   }
   rLinePos = desiredAiPos;
   #pragma endregion aiLine
