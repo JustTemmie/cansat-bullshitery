@@ -220,7 +220,7 @@ void PrintMap() { //solely for debugging
 }
 
 void MoveBall(){
-  tiles[tileBallX][tileBallY].isSolid = false;
+  //tiles[tileBallX][tileBallY].isSolid = false;
   
   /*//find the next position to check if there's a tile in the way
   int nextXPos = (int)(ballX+xVel+0.5f);
@@ -251,7 +251,7 @@ void MoveBall(){
   }
   // check if ball hits the left line
   if((int)(nextYPos+0.5f) == lLineCollum){
-    if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
+    if(nextYPos <= lLinePos+lineChonk && nextYPos >= lLinePos-lineChonk){
       xVel *= -1; // flip
     }
   }
@@ -262,7 +262,7 @@ void MoveBall(){
   tileBallX = (int)(ballX+0.5f);
   tileBallY = (int)(ballY+0.5f);
 
-  tiles[tileBallX][tileBallY].isSolid = true;
+  //tiles[tileBallX][tileBallY].isSolid = true;
 }
 
 void MoveLines()
