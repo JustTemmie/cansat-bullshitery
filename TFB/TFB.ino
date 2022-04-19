@@ -171,7 +171,7 @@ void PrintBallInfo(float data[]){
   for(int i = 0; i < 5; i++)
   {
     Serial.print(data[i]);
-    Serial.print(", ");
+    Serial.print(", A");
   }
 }
 
