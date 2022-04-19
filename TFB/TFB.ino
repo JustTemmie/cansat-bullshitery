@@ -311,7 +311,7 @@ void Communicate() {
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
   }
-  bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
+  /*bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
   if(containsPingsign)
   {
     float d[] = {
@@ -320,7 +320,7 @@ void Communicate() {
     };
     PrintData("", d, 2);
   }
-
+*/
   bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
   if(containsCallsign)
   {
