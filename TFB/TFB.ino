@@ -166,12 +166,12 @@ void MoveLines()
 
 void PrintBallInfo(float data[]){
   Serial.println();
-  Serial.print("TFB");
+  Serial.print("TFB, ");
 
   for(int i = 0; i < 5; i++)
   {
-    Serial.print(", ");
     Serial.print(data[i]);
+    Serial.print(", ");
   }
 }
 
