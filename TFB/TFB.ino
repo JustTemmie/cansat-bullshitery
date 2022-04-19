@@ -311,25 +311,33 @@ void Communicate() {
   String val;
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
+    delay(1);
   }
-  /*bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
+  bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
   if(containsPingsign)
   {
     float d[] = {
-        millis(),
-        computerLineMove
+        millis()
     };
-    PrintData("", d, 2);
+    PrintData("", d, 1);
+    Serial.println(val);
   }
-*/
   bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
+  //Serial.print(val + "repeater");
+  //bool containsCallsign = val.substring(0) == comCallsign; // check for the callsigs
   if(containsCallsign)
   {
-    val.remove(0, 5);
+    //val.remove(0, 7);
+    //val.remove(5,val.length()-5);
+    val.remove(0, val.length()-11);
+    Serial.println();
+    Serial.println(val);
+    //val.remove(val.length()-1, 1);
     float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
+    //Serial.print(n);
+    //Serial.print(val);
     if (n != 0) {
       computerLineMove = (int)n;
-      Serial.print(millis());
     }
   }
 }
