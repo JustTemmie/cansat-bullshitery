@@ -100,9 +100,10 @@ void loop() {
     ballY,
     angle,
     computerLineMove,
-    desiredAiPos
+    desiredAiPos,
+    millis()
   };
-  PrintData(pongCallsign, ballData, 5);
+  PrintData(pongCallsign, ballData, 6);
 }
 
 #pragma region primary
@@ -328,7 +329,7 @@ void Communicate() {
     float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
     if (n != 0) {
       computerLineMove = (int)n;
-      //Serial.print(n);
+      Serial.print(millis());
     }
   }
 }
