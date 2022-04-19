@@ -275,8 +275,11 @@ float RandomAngle(float origAngle)
 {
   float n = random(-5, 5);
   
-  xVel = cos(angle);
-  yVel = sin(angle);
+  int xVelAbs = abs(xVel);
+  int yVelAbs = abs(yVel);
+
+  xVel = cos(angle) * xVelAbs;
+  yVel = sin(angle) * yVelAbs;
 
   return origAngle + n;
 }
