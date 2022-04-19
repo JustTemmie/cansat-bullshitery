@@ -246,13 +246,13 @@ void MoveBall(){
   
   // check if ball hits the right line
   if(tileBallX == rLineCollum-1){
-    if(nextYPos <= rLinePos+lineChonk+1 && nextYPos >= rLinePos-lineChonk-1){
+    if(tileBallY <= rLinePos+lineChonk+1 && tileBallY >= rLinePos-lineChonk-1){
       xVel *= -1; // flip
     }
   }
   // check if ball hits the left line
   if(tileBallX == lLineCollum+1){
-    if(nextYPos <= lLinePos+lineChonk+1 && nextYPos >= lLinePos-lineChonk-1){
+    if(tileBallY <= lLinePos+lineChonk+1 && tileBallY >= lLinePos-lineChonk-1){
       xVel *= -1; // flip
     }
   }
