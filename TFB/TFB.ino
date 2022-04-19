@@ -275,8 +275,8 @@ float RandomAngle(float origAngle)
 {
   float n = random(-5, 5);
   
-  int xVelAbs = abs(xVel);
-  int yVelAbs = abs(yVel);
+  int xVelAbs = Normalize(xVel);
+  int yVelAbs = Normalize(yVel);
 
   xVel = cos(angle) * xVelAbs;
   yVel = sin(angle) * yVelAbs;
@@ -336,4 +336,9 @@ void PrintData(String callsign, float data[], int length){
     Serial.print(", ");
   }
   Serial.print("A"); // look idk man
+}
+
+int Normalize(float n){
+  if(n >= 0)  return 1;
+  else        return -1;
 }
