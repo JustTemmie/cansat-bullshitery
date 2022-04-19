@@ -7,10 +7,10 @@ import random
 print_axis = False
 debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
-print_map = False
+print_map = True
 
 device = "/dev/ttyACM0"
-input_device = "/dev/ttyUSB0"
+input_device = "/dev/ttyUSB1"
 use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
@@ -119,9 +119,16 @@ def print_game():
 def get_input(device):
     ser_bytes = device.readline()
     
-    #decodes the input into a string and removes some garbage
-    decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+    if debug_info:
+        print(ser_bytes)
     
+    #decodes the input into a string and removes some garbage
+    try:
+        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+    except:
+        get_input(device)
+        return
+
     #splits the input at every point where it sees a comma
     #this is done so that the script can very easily use the incoming data
     #for example i can just ask what array[1] is and it will return the X position for the ball
@@ -180,19 +187,13 @@ if __name__ == '__main__':
         
         try:
             #checks where the ball is relative to the player's paddle
-            
             #also double checks that it's not moving the paddle out of bounds
-            print("a")
-            print(array[2])
-            print(round(float(array[2])))
-            print("c")
             if round(float(array[2])) < pos and pos > paddle_chonk+1:
                 pos -= 1
             elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
                 pos += 1
             else:
                 pos += 0
-            print("b")
         except:
             print(f"could not understand the input, array = {array}")
         
@@ -210,7 +211,6 @@ if __name__ == '__main__':
         
         #prints debuf info meaning the array, and the position of the paddle
         if debug_info:
-            print(array)
             try:
                 print(f"desired position = {pos}, current position = {array[4]}")
                 #ser.write(str(pos).encode())
