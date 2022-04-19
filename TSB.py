@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 print_axis = False
-debug_info = True
+debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
