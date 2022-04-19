@@ -245,7 +245,7 @@ void MoveBall(){
   
   // check if ball hits the right line
   if((int)(nextXPos+0.5f) == rLineCollum){
-    if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
+    if(nextYPos <= rLinePos+lineChonk && nextYPos >= rLinePos-lineChonk){
       xVel *= -1; // flip
     }
   }
@@ -278,13 +278,15 @@ void MoveLines()
 
   #pragma region aiLine
   desiredAiPos = tileBallY;
-  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk)
-  for (int j = 0; j < lineWidth; j++){
-    tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
-    rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
-    tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
+  if(desiredAiPos <= lineWidth-1-lineChonk && desiredAiPos >= lineChonk)
+  {
+    for (int j = 0; j < lineWidth; j++){
+      tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
+      rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
+      tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
+    }
+    rLinePos = desiredAiPos;
   }
-  rLinePos = desiredAiPos;
   #pragma endregion aiLine
 }
 
