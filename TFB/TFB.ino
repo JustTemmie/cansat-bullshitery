@@ -248,18 +248,14 @@ void MoveBall(){
   }
   
   // check if ball hits the right line
-  if(tileBallX == rLineCollum-1 && Normalize(xVel) == 1){
-    if(tileBallY <= lLinePos+lineChonk && tileBallY >= lLinePos-lineChonk){
-      xVel *= -1; // flip
-      angle = RandomAngle(angle);
-    }
+  if(tileBallX >= rLineCollum-1 && Normalize(xVel) == 1){
+    xVel *= -1; // flip
+    angle = RandomAngle(angle);
   }
   // check if ball hits the left line
-  if(tileBallX == rLineCollum+1 && Normalize(xVel) == -1){
-    if(tileBallY <= rLinePos+lineChonk && tileBallY >= rLinePos-lineChonk){
-      xVel *= -1; // flip
-      angle = RandomAngle(angle);
-    }
+  if(tileBallX <= rLineCollum+1 && Normalize(xVel) == -1){
+    xVel *= -1; // flip
+    angle = RandomAngle(angle);
   }
 
   ballX += xVel;
