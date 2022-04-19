@@ -3,6 +3,25 @@ class Tile {
     bool isSolid = false;
 };
 
+//https://store.steampowered.com/app/1718240/Beaver_Clicker/
+#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_BMP280.h>
+//#include <NMEAGPS.h>
+
+using namespace std;
+
+Adafruit_BMP280 bmp; // use I2C interface
+Adafruit_Sensor *bmp_temp = bmp.getTemperatureSensor();
+Adafruit_Sensor *bmp_pressure = bmp.getPressureSensor();
+
+static const int RXPin = 4, TXPin = 3;
+
+float temp;
+float pressure;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #define gridSizeX 15
 #define gridSizeY 15
 Tile tiles [gridSizeX][gridSizeY];
@@ -26,13 +45,27 @@ int desiredAiPos;
 int lLinePos;
 int rLinePos;
 
+////////////////////////////////////////////////////////////////////////////
+
 #define comCallsign "TSB, "
+#define pongCallsign "TGB, "
+#define Callsign "TFB, "
 
 void setup() {
   Serial.begin(9600); // begin transmission
+  while ( !Serial )    // wait for native usb
+  {
+    Serial.println("usb missing");
+    delay(100);
+  }
+
+  InitBMP();
+
   SetupMap();
   //pinMode(6, OUTPUT);
   Serial.println();
+  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude");
+  Serial.println("pong");
   Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, GroundPaddlePos, CansatPaddlePos");
   PrintMapData();
 }
@@ -43,22 +76,88 @@ void PrintMapData()
   Serial.print("Line Size = "); Serial.println(lineWidth);
 }
 void loop() {
+  ReadBMP();
+  float d[] = {
+    temp,
+    ReadLM(0, 1), //offset, sensitivity
+    ReadNTC(0, 1), //off, grad
+    pressure,
+    ReadMPX(),
+    BMPAltutude(991)
+  };
+  PrintData(Callsign, d, 6);
+
   MoveLines();
   MoveBall();
   delay(delayTime);
-  PrintMap();
+  //PrintMap();
   Communicate();
 
-  float d[] = {
+  float ballData[] = {
     ballX,
     ballY,
     angle,
     computerLineMove,
     desiredAiPos
   };
-  PrintBallInfo(d);
+  PrintData(pongCallsign, ballData, 5);
 }
 
+#pragma region primary
+void InitBMP() {
+  unsigned status;
+  status = bmp.begin();
+  if (!status) {
+    Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
+                      "try a different address!"));
+    while (1) delay(10);
+  }
+
+  /* Default settings from datasheet. */
+  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
+                  Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
+                  Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
+                  Adafruit_BMP280::FILTER_X16,      /* Filtering. */
+                  Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
+
+  bmp_temp->printSensorDetails();
+}
+
+void ReadBMP() {
+  float f = bmp.readTemperature();
+  
+  sensors_event_t temp_event, pressure_event;
+  bmp_temp->getEvent(&temp_event);
+  bmp_pressure->getEvent(&pressure_event);
+
+  temp = temp_event.temperature;
+  pressure = pressure_event.pressure;
+}
+float BMPAltutude(float seaPressure){
+  return bmp.readAltitude(seaPressure);
+}
+float ReadMPX() {
+  float volt = BitToVolt(1);
+  return 10*(volt/(0.009*5)+(0.095/0.009));
+}
+float ReadLM(float lmOffset, float lmSens){
+  float volt = BitToVolt(2);
+  return (volt - lmOffset)*lmSens;
+}
+float ReadNTC(float ntcOff, float ntcGrad) {
+  float bit = analogRead(A0);
+  float volt = BitToVolt(0);
+  return ntcOff + ntcGrad * volt;
+}
+
+float BitToVolt(int n){    //Function to convert raw ADC-data (0-255) to volt
+  int raw = analogRead(n);
+  float volt = (float)raw*5.000/1023;
+  return volt;
+}
+#pragma endregion primary
+
+#pragma region pong
 void SetupMap()
 {
   for (int x = 0; x < gridSizeX; x++){
@@ -122,7 +221,7 @@ void PrintMap() { //solely for debugging
 void MoveBall(){
   tiles[tileBallX][tileBallY].isSolid = false;
   
-  //find the next position to check if there's a tile in the way
+  /*//find the next position to check if there's a tile in the way
   int nextXPos = (int)(ballX+xVel+0.5f);
   if(tiles[nextXPos][tileBallY].isSolid) {
     xVel *= -1;
@@ -130,8 +229,32 @@ void MoveBall(){
   int nextYPos = (int)(ballY+yVel+0.5f);
   if(tiles[nextYPos][tileBallX].isSolid) {
     yVel *= -1;
-  }
+  }*/
   //move the ball
+
+  int nextXPos = (int)(ballX+xVel+0.5f);
+  int nextYPos = (int)(ballY+yVel+0.5f);
+  if(nextXPos == 0 || gridSizeY-1) yVel *= -1; // flip if next position is a wall
+  if(tileBallX == 1 || gridSizeX-2) // check if ball has hit goal
+  {
+    // set ball to center
+    ballX = gridSizeX/2;
+    ballY = gridSizeY/2;
+  }
+  
+  // check if ball hits the right line
+  if(nextXPos == rLineCollum){
+    if(nextYPos < computerLineMove+lineChonk && nextYPos > computerLineMove-lineChonk){
+      xVel *= -1; // flip
+    }
+  }
+  // check if ball hits the left line
+  if(nextXPos == lLineCollum){
+    if(nextYPos < desiredAiPos+lineChonk && nextYPos > desiredAiPos-lineChonk){
+      xVel *= -1; // flip
+    }
+  }
+
   ballX += xVel;
   ballY += yVel;
   //set the tile representing the ball to the ball's closest tile
@@ -164,18 +287,6 @@ void MoveLines()
   #pragma endregion aiLine
 }
 
-void PrintBallInfo(float data[]){
-  Serial.println();
-  Serial.print("TFB, ");
-
-  for(int i = 0; i < 5; i++)
-  {
-    Serial.print(data[i]);
-    Serial.print(", ");
-  }
-  Serial.print("A"); // look idk man
-}
-
 void Communicate() {
   //Serial.println("Hello World!");
   String val;
@@ -192,4 +303,17 @@ void Communicate() {
       //Serial.print(n);
     }
   }
+}
+#pragma endregion pong
+
+void PrintData(String callsign, float data[], int length){
+  Serial.println();
+  Serial.print(callsign);
+
+  for(int i = 0; i < length; i++)
+  {
+    Serial.print(data[i]);
+    Serial.print(", ");
+  }
+  Serial.print("A"); // look idk man
 }
