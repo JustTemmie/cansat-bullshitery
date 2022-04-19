@@ -7,7 +7,7 @@ from datetime import datetime
 print_axis = False
 debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
-print_map = False
+print_map = True
 
 device = "/dev/ttyACM1"
 input_device = "/dev/ttyUSB0"

@@ -65,7 +65,7 @@ void setup() {
   SetupMap();
   //pinMode(6, OUTPUT);
   Serial.println();
-  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude, Uptime");
+  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude");
   Serial.println("pong");
   Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, GroundPaddlePos, CansatPaddlePos");
   PrintMapData();
@@ -84,10 +84,9 @@ void loop() {
     ReadNTC(0, 1), //off, grad
     pressure,
     ReadMPX(),
-    BMPAltutude(1021),
-    millis()
+    BMPAltutude(991)
   };
-  PrintData(Callsign, d, 7);
+  PrintData(Callsign, d, 6);
 
   MoveLines();
   MoveBall();
@@ -221,7 +220,7 @@ void PrintMap() { //solely for debugging
 }
 
 void MoveBall(){
-  //tiles[tileBallX][tileBallY].isSolid = false;
+  tiles[tileBallX][tileBallY].isSolid = false;
   
   /*//find the next position to check if there's a tile in the way
   int nextXPos = (int)(ballX+xVel+0.5f);
@@ -249,15 +248,15 @@ void MoveBall(){
   }
   
   // check if ball hits the right line
-  if(tileBallX == rLineCollum-1){
-    if(tileBallY <= rLinePos+lineChonk+1 && tileBallY >= rLinePos-lineChonk-1){
+  if((int)(nextXPos+0.5f) == rLineCollum){
+    if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
       xVel *= -1; // flip
       angle = RandomAngle(angle);
     }
   }
   // check if ball hits the left line
-  if(tileBallX == lLineCollum+1){
-    if(tileBallY <= lLinePos+lineChonk+1 && tileBallY >= lLinePos-lineChonk-1){
+  if((int)(nextYPos+0.5f) == lLineCollum){
+    if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
       xVel *= -1; // flip
       angle = RandomAngle(angle);
     }
@@ -269,7 +268,7 @@ void MoveBall(){
   tileBallX = (int)(ballX+0.5f);
   tileBallY = (int)(ballY+0.5f);
 
-  //tiles[tileBallX][tileBallY].isSolid = true;
+  tiles[tileBallX][tileBallY].isSolid = true;
 }
 
 float RandomAngle(float origAngle)
@@ -295,15 +294,13 @@ void MoveLines()
 
   #pragma region aiLine
   desiredAiPos = tileBallY;
-  if(desiredAiPos <= lineWidth-1-lineChonk && desiredAiPos >= lineChonk)
-  {
-    for (int j = 0; j < lineWidth; j++){
-      tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
-      rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
-      tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
-    }
-    rLinePos = desiredAiPos;
+  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk)
+  for (int j = 0; j < lineWidth; j++){
+    tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
+    rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
+    tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
   }
+  rLinePos = desiredAiPos;
   #pragma endregion aiLine
 }
 
