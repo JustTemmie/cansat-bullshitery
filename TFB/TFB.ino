@@ -46,7 +46,7 @@ void loop() {
   MoveLines();
   MoveBall();
   delay(delayTime);
-  //PrintMap();
+  PrintMap();
   Communicate();
 
   float d[] = {
@@ -171,8 +171,9 @@ void PrintBallInfo(float data[]){
   for(int i = 0; i < 5; i++)
   {
     Serial.print(data[i]);
-    Serial.print(", A");
+    Serial.print(", ");
   }
+  Serial.print("A"); // look idk man
 }
 
 void Communicate() {
