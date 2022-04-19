@@ -249,14 +249,14 @@ void MoveBall(){
   
   // check if ball hits the right line
   if((int)(nextXPos+0.5f) == rLineCollum){
-    if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
+    if(nextYPos <= lLinePos+lineChonk && nextYPos >= lLinePos-lineChonk){
       xVel *= -1; // flip
       angle = RandomAngle(angle);
     }
   }
   // check if ball hits the left line
   if((int)(nextYPos+0.5f) == lLineCollum){
-    if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
+    if(nextYPos <= rLinePos+lineChonk && nextYPos >= rLinePos-lineChonk){
       xVel *= -1; // flip
       angle = RandomAngle(angle);
     }
