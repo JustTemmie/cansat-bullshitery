@@ -9,8 +9,8 @@ debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
-device = "/dev/ttyACM0"
-input_device = "/dev/ttyUSB1"
+device = "/dev/ttyACM2"
+input_device = "/dev/ttyUSB0"
 use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
@@ -126,20 +126,21 @@ def get_input(device):
     try:
         decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
     except:
-        get_input(device)
-        return
+        return get_input(device)
+
 
     #splits the input at every point where it sees a comma
     #this is done so that the script can very easily use the incoming data
     #for example i can just ask what array[1] is and it will return the X position for the ball
     array = decoded_bytes.split(",")
     
-    if array[0] == "TFB": 
+    if array[0] == "TGB": 
         if array != None:
-            print(array)
+            if debug_info:
+                print(f"sucess!, {array}")
             return array
 
-    get_input(device)
+    return get_input(device)
     
     
     
@@ -168,11 +169,13 @@ if __name__ == '__main__':
     while True:        
         
         clear_board()
-        time.sleep(0.)
+        time.sleep(0.06)
         
         
         array = get_input(ser_input)
-        print(array)
+        
+        if debug_info:
+            print(array)
         
         time.sleep(0.04)
         
@@ -189,11 +192,14 @@ if __name__ == '__main__':
             #checks where the ball is relative to the player's paddle
             #also double checks that it's not moving the paddle out of bounds
             if round(float(array[2])) < pos and pos > paddle_chonk+1:
-                pos -= 1
+                #pos -= 1
+                pos = round(float(array[2]))
             elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
-                pos += 1
+                #pos += 1
+                pos = round(float(array[2]))
             else:
                 pos += 0
+            
         except:
             print(f"could not understand the input, array = {array}")
         

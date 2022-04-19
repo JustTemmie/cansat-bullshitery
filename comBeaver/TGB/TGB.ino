@@ -9,7 +9,7 @@ void loop(){
     val = val + (char)Serial.read(); // read data byte by byte and store it
   }
   if (val != "") {
-  Serial.println(val);
+    Serial.println(val);
   }
   /*float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
   if (n != 0) {
