@@ -89,11 +89,11 @@ void loop() {
   };
   PrintData(Callsign, d, 7);
 
+  Communicate();
   MoveLines();
   MoveBall();
   delay(delayTime);
   //PrintMap();
-  Communicate();
 
   float ballData[] = {
     ballX,
@@ -294,11 +294,12 @@ void MoveLines()
 
   #pragma region aiLine
   desiredAiPos = tileBallY;
-  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk)
-  for (int j = 0; j < lineWidth; j++){
-    tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
-    rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
-    tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
+  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk){
+    for (int j = 0; j < lineWidth; j++){
+      tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
+      rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
+      tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
+    }
   }
   rLinePos = desiredAiPos;
   #pragma endregion aiLine
@@ -310,6 +311,16 @@ void Communicate() {
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
   }
+  bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
+  if(containsPingsign)
+  {
+    float d[] = {
+        millis(),
+        computerLineMove
+    };
+    PrintData("", d, 2);
+  }
+
   bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
   if(containsCallsign)
   {
