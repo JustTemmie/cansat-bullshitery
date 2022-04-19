@@ -89,11 +89,11 @@ void loop() {
   };
   PrintData(Callsign, d, 7);
 
+  Communicate();
   MoveLines();
   MoveBall();
   delay(delayTime);
   //PrintMap();
-  Communicate();
 
   float ballData[] = {
     ballX,
@@ -318,6 +318,13 @@ void Communicate() {
     float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
     if (n != 0) {
       computerLineMove = (int)n;
+      Serial.println();
+      
+      float d[] = {
+        millis(),
+        computerLineMove
+      };
+      PrintData("Pong, ", d, 2);
       //Serial.print(n);
     }
   }
