@@ -65,7 +65,7 @@ void setup() {
   SetupMap();
   //pinMode(6, OUTPUT);
   Serial.println();
-  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude");
+  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude, Uptime");
   Serial.println("pong");
   Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, GroundPaddlePos, CansatPaddlePos");
   PrintMapData();
@@ -84,9 +84,10 @@ void loop() {
     ReadNTC(0, 1), //off, grad
     pressure,
     ReadMPX(),
-    BMPAltutude(1021)
+    BMPAltutude(1021),
+    millis()
   };
-  PrintData(Callsign, d, 6);
+  PrintData(Callsign, d, 7);
 
   MoveLines();
   MoveBall();
