@@ -85,7 +85,7 @@ void loop() {
     pressure,
     ReadMPX(),
     BMPAltutude(1021),
-    millis()
+    millis()/1000
   };
   PrintData(Callsign, d, 7);
 
