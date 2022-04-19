@@ -332,7 +332,7 @@ void PrintData(String callsign, float data[], int length){
     Serial.print(data[i]);
     Serial.print(", ");
   }
-  Serial.print("A"); // look idk man
+  //Serial.print("A"); // look idk man
 }
 
 int Normalize(float n){
