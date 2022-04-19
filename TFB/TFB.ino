@@ -234,8 +234,8 @@ void MoveBall(){
 
   int nextXPos = (int)(ballX+xVel+0.5f);
   int nextYPos = (int)(ballY+yVel+0.5f);
-  if(nextYPos == 0 || gridSizeY-1) yVel *= -1; // flip if next position is a wall
-  if(tileBallX == 1 || gridSizeX-2) // check if ball has hit goal
+  if(nextYPos == 0 || nextYPos == gridSizeY-1) yVel *= -1; // flip if next position is a wall
+  if(tileBallX == 1 || tileBallX == gridSizeX-2) // check if ball has hit goal
   {
     // set ball to center
     ballX = gridSizeX/2;
