@@ -234,7 +234,7 @@ void MoveBall(){
 
   float nextXPos = (ballX+xVel);
   float nextYPos = (ballY+yVel);
-  if(nextYPos <= 1 || nextYPos >= gridSizeY-1) yVel *= -1; // flip if next position is a wall
+  if(nextYPos <= 1 || nextYPos >= gridSizeY-2) yVel *= -1; // flip if next position is a wall
   if(tileBallX == 1 || tileBallX == gridSizeX-2) // check if ball has hit goal
   {
     // set ball to center
@@ -244,13 +244,13 @@ void MoveBall(){
   
   // check if ball hits the right line
   if(nextXPos == rLineCollum){
-    if(nextYPos < computerLineMove+lineChonk && nextYPos > computerLineMove-lineChonk){
+    if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
       xVel *= -1; // flip
     }
   }
   // check if ball hits the left line
   if(nextXPos == lLineCollum){
-    if(nextYPos < desiredAiPos+lineChonk && nextYPos > desiredAiPos-lineChonk){
+    if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
       xVel *= -1; // flip
     }
   }
