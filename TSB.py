@@ -6,13 +6,14 @@ from datetime import date, datetime
 import random
 
 print_axis = False
-debug_info = False
+debug_info = True
+raw_debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
-device = "/dev/ttyACM0"
-input_device = "/dev/ttyUSB0"
-use_device_as_input = True # must be set to false for wireless
+device = "/dev/ttyACM9"
+input_device = "/dev/ttyUSB3"
+use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
 ball = "😳"
@@ -120,7 +121,7 @@ def print_game():
 def get_input(device):
     ser_bytes = device.readline()
     
-    if debug_info:
+    if raw_debug_info:
         print(ser_bytes)
     
     #decodes the input into a string and removes some garbage
@@ -146,12 +147,25 @@ def get_input(device):
     #this is done so that the script can very easily use the incoming data
     #for example i can just ask what array[1] is and it will return the X position for the ball
     array = decoded_bytes.split(",")
-    
-    if array[0] == "TGB": 
-        if array != None:
-            if debug_info:
-                print(f"sucess!, {array}")
-            return array
+    try:
+        if array[0] == "TGB": 
+            if array != None:
+                if debug_info:
+                    print(f"sucess!, {array}")
+                return array
+        
+        
+        elif array[1] == "ping":
+            if array != None:
+                print("pong!  " + array)
+                ping_file_object = open('latency.txt', 'a')
+                # Append 'hello' at the end of file
+                ping_file_object.write(f"{decoded_bytes} \n")
+                # Close the file
+                ping_file_object.close()
+    except Exception as e:
+        print(f"error in get_input : {e}  on the array {array}")
+        return get_input(device)
 
     return get_input(device)
     
@@ -196,6 +210,7 @@ if __name__ == '__main__':
         if debug_info:
             print("trying to get input")
         array = get_input(ser_input)
+        #array = ["TGB", 8, 9, 40, 9, 2, "asd"]
         
         if debug_info:
             print(array)
@@ -248,11 +263,15 @@ if __name__ == '__main__':
             except:
                 pass
         
-        var = datetime.now().strftime("%H:%M.%S.%f")
-        output = f"TSB, {pos}, {var}"
-        print(output)
+        #var = datetime.now().strftime("%H:%M.%S.%f")
+        output = f"TSB, {pos}"
+        if raw_debug_info:
+            print(output)
         try:
+            
             ser.write(output.encode())
+            if raw_debug_info:
+                print(f"sucesfully printed  {output}")
         except:
             print("failed whilst writing to TDB")
         

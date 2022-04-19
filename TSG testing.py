@@ -4,7 +4,7 @@ from serial import Serial
 import time
 from datetime import datetime
 
-device = "/dev/ttyACM1"
+device = "/dev/ttyACM9"
 ser_rate = 9600
 
 n = 0
@@ -20,5 +20,5 @@ if __name__ == '__main__':
         ser.write(f"TSB, 9, {var}".encode())
         print(var)
         
-        time.sleep(0.3)
+        time.sleep(1)
         

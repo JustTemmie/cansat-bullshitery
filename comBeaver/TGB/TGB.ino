@@ -14,19 +14,20 @@ void loop(){
     //Serial.println("Hello World!");
   String val;
   while (Serial.available() > 0) {
-    val = val + (char)Serial.read(); // read data byte by byte and store itq
+    val = val + (char)Serial.read(); // read data byte by byte and store it
     delay(1);
   }
+ 
   if (val != "") {
-    Serial.print(val);
-    Serial.print("   ");
-    Serial.println(millis());
+    Serial.print("ping");
+    delay(2);
+    Serial.print(millis());
+    delay(2);
+    Serial.println(val);
     n = millis;
-  }
-  if (n+1000 < millis) {
-    Serial.println(millis());
-    Serial.println();
-    n = millis;
+
+    delay(20);
+    Serial.println(val);
   }
   /*float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
   if (n != 0) {
