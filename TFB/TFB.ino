@@ -10,7 +10,7 @@ class Tile {
 //#include <NMEAGPS.h>
 
 using namespace std;
-
+  
 Adafruit_BMP280 bmp; // use I2C interface
 Adafruit_Sensor *bmp_temp = bmp.getTemperatureSensor();
 Adafruit_Sensor *bmp_pressure = bmp.getPressureSensor();
@@ -263,12 +263,6 @@ void MoveBall(){
   tileBallY = (int)(ballY+0.5f);
 
   tiles[tileBallX][tileBallY].isSolid = true;
-}
-
-long RandomAngle(long origAngle)
-{
-  long n = random(-5, 5);
-  return origAngle + n;
 }
 
 void MoveLines()
