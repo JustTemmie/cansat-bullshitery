@@ -84,7 +84,7 @@ void loop() {
     ReadNTC(0, 1), //off, grad
     pressure,
     ReadMPX(),
-    BMPAltutude(991)
+    BMPAltutude(1021)
   };
   PrintData(Callsign, d, 6);
 
