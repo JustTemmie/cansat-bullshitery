@@ -11,8 +11,8 @@ raw_debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
-device = "/dev/ttyACM0"
-input_device = "/dev/ttyUSB0"
+device = "/dev/ttyACM5"
+input_device = "/dev/ttyUSB1"
 use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
@@ -132,7 +132,7 @@ def get_input(device):
         try:
             # Open a file with access mode 'a'
             file_object = open('cansat_output.txt', 'a')
-            # Append 'hello' at the end of file
+            # Append a string at the end of file
             file_object.write(f"{decoded_bytes} \n")
             # Close the file
             file_object.close()
@@ -232,11 +232,11 @@ if __name__ == '__main__':
                 #checks where the ball is relative to the player's paddle
                 #also double checks that it's not moving the paddle out of bounds
                 if round(float(array[2])) < pos and pos > paddle_chonk+1:
-                    pos -= 1
-                    #pos = round(float(array[2]))
+                    #pos -= 1
+                    pos = round(float(array[2]))
                 elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
-                    pos += 1
-                    #pos = round(float(array[2]))
+                    #pos += 1
+                    pos = round(float(array[2]))
                 else:
                     pos += 0
             
@@ -264,8 +264,8 @@ if __name__ == '__main__':
             except:
                 pass
         
-        #var = datetime.now().strftime("%H:%M.%S.%f")
-        output = f"TSB, {pos}"
+        var = datetime.now().strftime("%H:%M.%S.%f")
+        output = f"TSB, {var}-0000{pos}beaver "
         if raw_debug_info:
             print(output)
         try:
