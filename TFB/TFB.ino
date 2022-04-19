@@ -266,6 +266,12 @@ void MoveBall(){
   //tiles[tileBallX][tileBallY].isSolid = true;
 }
 
+long RandomAngle(long origAngle)
+{
+  long n = random(-5, 5);
+  return origAngle + n;
+}
+
 void MoveLines()
 {
   #pragma region groundLine  
