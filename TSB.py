@@ -2,14 +2,15 @@ import serial
 from serial import Serial
 
 import time
-from datetime import datetime
+from datetime import date, datetime
+import random
 
 print_axis = False
 debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
-device = "/dev/ttyACM2"
+device = "/dev/ttyACM0"
 input_device = "/dev/ttyUSB0"
 use_device_as_input = True # must be set to false for wireless
 ser_rate = 9600
@@ -124,7 +125,7 @@ def get_input(device):
     
     #decodes the input into a string and removes some garbage
     try:
-        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8")) + datetime.now().strftime("%H:%M:%S")
         
         try:
             # Open a file with access mode 'a'
@@ -211,16 +212,17 @@ if __name__ == '__main__':
             #pass
         
         try:
-            #checks where the ball is relative to the player's paddle
-            #also double checks that it's not moving the paddle out of bounds
-            if round(float(array[2])) < pos and pos > paddle_chonk+1:
-                pos -= 1
-                #pos = round(float(array[2]))
-            elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
-                pos += 1
-                #pos = round(float(array[2]))
-            else:
-                pos += 0
+            if random.randint(0,30) != 0:
+                #checks where the ball is relative to the player's paddle
+                #also double checks that it's not moving the paddle out of bounds
+                if round(float(array[2])) < pos and pos > paddle_chonk+1:
+                    pos -= 1
+                    #pos = round(float(array[2]))
+                elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
+                    pos += 1
+                    #pos = round(float(array[2]))
+                else:
+                    pos += 0
             
         except:
             print(f"could not understand the input, array = {array}")
@@ -246,7 +248,8 @@ if __name__ == '__main__':
             except:
                 pass
         
-        output = f"TSB, {pos}"
+        var = datetime.now().strftime("%H:%M.%S.%f")
+        output = f"TSB, {pos}, {var}"
         print(output)
         try:
             ser.write(output.encode())
