@@ -10,7 +10,7 @@ class Tile {
 //#include <NMEAGPS.h>
 
 using namespace std;
-  
+
 Adafruit_BMP280 bmp; // use I2C interface
 Adafruit_Sensor *bmp_temp = bmp.getTemperatureSensor();
 Adafruit_Sensor *bmp_pressure = bmp.getPressureSensor();
@@ -235,7 +235,11 @@ void MoveBall(){
 
   float nextXPos = (ballX+xVel);
   float nextYPos = (ballY+yVel);
-  if(nextYPos <= 1 || nextYPos >= gridSizeY-2) yVel *= -1; // flip if next position is a wall
+  if(nextYPos <= 1 || nextYPos >= gridSizeY-2)  // flip if next position is a wall
+  {
+    yVel *= -1;
+    angle = RandomAngle(angle);
+  }
   if(tileBallX == 1 || tileBallX == gridSizeX-2) // check if ball has hit goal
   {
     // set ball to center
@@ -247,12 +251,14 @@ void MoveBall(){
   if((int)(nextXPos+0.5f) == rLineCollum){
     if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
       xVel *= -1; // flip
+      angle = RandomAngle(angle);
     }
   }
   // check if ball hits the left line
   if((int)(nextYPos+0.5f) == lLineCollum){
     if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
       xVel *= -1; // flip
+      angle = RandomAngle(angle);
     }
   }
 
@@ -263,6 +269,16 @@ void MoveBall(){
   tileBallY = (int)(ballY+0.5f);
 
   tiles[tileBallX][tileBallY].isSolid = true;
+}
+
+float RandomAngle(float origAngle)
+{
+  float n = random(-5, 5);
+  
+  xVel = cos(angle);
+  yVel = sin(angle);
+
+  return origAngle + n;
 }
 
 void MoveLines()
