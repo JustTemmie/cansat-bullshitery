@@ -2,7 +2,7 @@ import serial
 from serial import Serial
 
 import time
-import random
+from datetime import datetime
 
 print_axis = False
 debug_info = True
@@ -125,6 +125,18 @@ def get_input(device):
     #decodes the input into a string and removes some garbage
     try:
         decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
+        
+        try:
+            # Open a file with access mode 'a'
+            file_object = open('cansat_output.txt', 'a')
+            # Append 'hello' at the end of file
+            file_object.write(f"{decoded_bytes} \n")
+            # Close the file
+            file_object.close()
+
+        except Exception as e:
+            print(f"error in writing to output.txt : {e}")
+
     except:
         return get_input(device)
 
@@ -160,6 +172,14 @@ if __name__ == '__main__':
         ser_input = serial.Serial(input_device, ser_rate)
     time.sleep(0.4)
     print(ser.name)
+    
+    # Open a file with access mode 'a'
+    file_object = open('cansat_output.txt', 'a')
+    # Append 'hello' at the end of file
+    file_object.write(f"\n\n\n ----------------------------------- \n python script started at \n {datetime.now()} \n\n\n")
+    # Close the file
+    file_object.close()
+            
     
     #flush the serial port to clear any garbage
     ser.flushInput()
