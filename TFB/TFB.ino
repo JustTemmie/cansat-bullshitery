@@ -311,6 +311,16 @@ void Communicate() {
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
   }
+  bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
+  if(containsPingsign)
+  {
+    float d[] = {
+        millis(),
+        computerLineMove
+    };
+    PrintData("", d, 2);
+  }
+
   bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
   if(containsCallsign)
   {
@@ -318,12 +328,6 @@ void Communicate() {
     float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
     if (n != 0) {
       computerLineMove = (int)n;
-      
-      float d[] = {
-        millis(),
-        computerLineMove
-      };
-      PrintData("Pong, ", d, 2);
       //Serial.print(n);
     }
   }
