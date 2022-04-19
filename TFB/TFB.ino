@@ -243,14 +243,14 @@ void MoveBall(){
   }
   
   // check if ball hits the right line
-  if((int)(nextXPos+0.5f) == rLineCollum){
-    if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
+  if(nextXPos == rLineCollum){
+    if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
       xVel *= -1; // flip
     }
   }
   // check if ball hits the left line
-  if((int)(nextYPos+0.5f) == lLineCollum){
-    if(nextYPos <= computerLineMove+lineChonk && nextYPos >= computerLineMove-lineChonk){
+  if(nextXPos == lLineCollum){
+    if(nextYPos <= desiredAiPos+lineChonk && nextYPos >= desiredAiPos-lineChonk){
       xVel *= -1; // flip
     }
   }
