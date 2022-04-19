@@ -9,7 +9,7 @@ debug_info = True
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
-device = "/dev/ttyACM4"
+device = "/dev/ttyACM0"
 input_device = "/dev/ttyUSB0"
 use_device_as_input = True # must be set to false for wireless
 ser_rate = 9600
