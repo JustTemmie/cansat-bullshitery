@@ -7,12 +7,12 @@ import random
 
 print_axis = False
 debug_info = True
-raw_debug_info = True
+raw_debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
-device = "/dev/ttyACM9"
-input_device = "/dev/ttyUSB3"
+device = "/dev/ttyACM0"
+input_device = "/dev/ttyUSB0"
 use_device_as_input = False # must be set to false for wireless
 ser_rate = 9600
 
@@ -126,7 +126,8 @@ def get_input(device):
     
     #decodes the input into a string and removes some garbage
     try:
-        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8")) + datetime.now().strftime("%H:%M:%S")
+        time.sleep(0.1)
+        decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
         
         try:
             # Open a file with access mode 'a'
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     while True:        
         
         clear_board()
-        time.sleep(0.06)
+        time.sleep(0.15)
         
         
         if debug_info:
@@ -215,7 +216,7 @@ if __name__ == '__main__':
         if debug_info:
             print(array)
         
-        time.sleep(0.04)
+        time.sleep(0.15)
         
         
         try:
@@ -270,8 +271,8 @@ if __name__ == '__main__':
         try:
             
             ser.write(output.encode())
-            if raw_debug_info:
-                print(f"sucesfully printed  {output}")
+            if debug_info:
+                print(f"sucesfully sent  {output}")
         except:
             print("failed whilst writing to TDB")
         

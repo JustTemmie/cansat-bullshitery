@@ -36,7 +36,7 @@ int tileBallX, tileBallY;
 float angle = 45;
 float speed = 1;
 float xVel, yVel;
-#define delayTime 100
+#define delayTime 300
 
 int lLineTiles [lineWidth];
 int rLineTiles [lineWidth];

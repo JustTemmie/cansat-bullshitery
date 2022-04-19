@@ -19,14 +19,15 @@ void loop(){
   }
  
   if (val != "") {
-    Serial.print("ping");
+    /*Serial.print("ping");
     delay(2);
     Serial.print(millis());
     delay(2);
     Serial.println(val);
     n = millis;
 
-    delay(20);
+    delay(20);*/
+    Serial.println();
     Serial.println(val);
   }
   /*float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
