@@ -254,7 +254,7 @@ void MoveBall(){
     angle = RandomAngle(angle);
   }
   // check if ball hits the left line
-  if(tileBallX <= rLineCollum+1 && Normalize(xVel) == -1){
+  if(tileBallX <= lLineCollum+1 && Normalize(xVel) == -1){
     xVel *= -1; // flip
     angle = RandomAngle(angle);
   }
