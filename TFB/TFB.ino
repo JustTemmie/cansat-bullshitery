@@ -236,7 +236,11 @@ void MoveBall(){
 
   float nextXPos = (ballX+xVel);
   float nextYPos = (ballY+yVel);
-  if(nextYPos <= 1 || nextYPos >= gridSizeY-2) yVel *= -1; // flip if next position is a wall
+  if(nextYPos <= 1 || nextYPos >= gridSizeY-2)  // flip if next position is a wall
+  {
+    yVel *= -1;
+    angle = RandomAngle(angle);
+  }
   if(tileBallX == 1 || tileBallX == gridSizeX-2) // check if ball has hit goal
   {
     // set ball to center
@@ -248,12 +252,14 @@ void MoveBall(){
   if(tileBallX == rLineCollum-1){
     if(tileBallY <= rLinePos+lineChonk+1 && tileBallY >= rLinePos-lineChonk-1){
       xVel *= -1; // flip
+      angle = RandomAngle(angle);
     }
   }
   // check if ball hits the left line
   if(tileBallX == lLineCollum+1){
     if(tileBallY <= lLinePos+lineChonk+1 && tileBallY >= lLinePos-lineChonk-1){
       xVel *= -1; // flip
+      angle = RandomAngle(angle);
     }
   }
 
@@ -266,9 +272,13 @@ void MoveBall(){
   //tiles[tileBallX][tileBallY].isSolid = true;
 }
 
-long RandomAngle(long origAngle)
+float RandomAngle(float origAngle)
 {
-  long n = random(-5, 5);
+  float n = random(-5, 5);
+  
+  xVel = cos(angle);
+  yVel = sin(angle);
+
   return origAngle + n;
 }
 
