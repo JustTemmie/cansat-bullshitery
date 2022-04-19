@@ -58,6 +58,7 @@ void setup() {
     Serial.println("usb missing");
     delay(100);
   }
+  Serial.println("usb connected");
 
   InitBMP();
 

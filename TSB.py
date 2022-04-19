@@ -5,13 +5,13 @@ import time
 import random
 
 print_axis = False
-debug_info = True
+debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
 
 device = "/dev/ttyACM2"
 input_device = "/dev/ttyUSB0"
-use_device_as_input = False # must be set to false for wireless
+use_device_as_input = True # must be set to false for wireless
 ser_rate = 9600
 
 ball = "😳"
@@ -172,6 +172,8 @@ if __name__ == '__main__':
         time.sleep(0.06)
         
         
+        if debug_info:
+            print("trying to get input")
         array = get_input(ser_input)
         
         if debug_info:
@@ -192,11 +194,11 @@ if __name__ == '__main__':
             #checks where the ball is relative to the player's paddle
             #also double checks that it's not moving the paddle out of bounds
             if round(float(array[2])) < pos and pos > paddle_chonk+1:
-                #pos -= 1
-                pos = round(float(array[2]))
+                pos -= 1
+                #pos = round(float(array[2]))
             elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
-                #pos += 1
-                pos = round(float(array[2]))
+                pos += 1
+                #pos = round(float(array[2]))
             else:
                 pos += 0
             
