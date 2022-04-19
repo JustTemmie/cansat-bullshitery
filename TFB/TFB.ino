@@ -65,7 +65,7 @@ void setup() {
   SetupMap();
   //pinMode(6, OUTPUT);
   Serial.println();
-  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude");
+  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude, Uptime");
   Serial.println("pong");
   Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, GroundPaddlePos, CansatPaddlePos");
   PrintMapData();
@@ -84,15 +84,16 @@ void loop() {
     ReadNTC(0, 1), //off, grad
     pressure,
     ReadMPX(),
-    BMPAltutude(991)
+    BMPAltutude(991),
+    millis()
   };
-  PrintData(Callsign, d, 6);
+  PrintData(Callsign, d, 7);
 
+  Communicate();
   MoveLines();
   MoveBall();
   delay(delayTime);
   //PrintMap();
-  Communicate();
 
   float ballData[] = {
     ballX,
@@ -253,7 +254,7 @@ void MoveBall(){
     angle = RandomAngle(angle);
   }
   // check if ball hits the left line
-  if(tileBallX <= rLineCollum+1 && Normalize(xVel) == -1){
+  if(tileBallX <= lLineCollum+1 && Normalize(xVel) == -1){
     xVel *= -1; // flip
     angle = RandomAngle(angle);
   }
@@ -293,11 +294,12 @@ void MoveLines()
 
   #pragma region aiLine
   desiredAiPos = tileBallY;
-  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk)
-  for (int j = 0; j < lineWidth; j++){
-    tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
-    rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
-    tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
+  if(desiredAiPos < lineWidth-1-lineChonk && desiredAiPos > lineChonk){
+    for (int j = 0; j < lineWidth; j++){
+      tiles[rLineCollum][rLineTiles[j]].isSolid = false; // disable the tiles for the line temporarily
+      rLineTiles[j] -= rLinePos-desiredAiPos; // move tiles based on input
+      tiles[rLineCollum][rLineTiles[j]].isSolid = true; // enable the new tiles       
+    }
   }
   rLinePos = desiredAiPos;
   #pragma endregion aiLine
@@ -309,6 +311,16 @@ void Communicate() {
   while (Serial.available() > 0) {
     val = val + (char)Serial.read(); // read data byte by byte and store it
   }
+  /*bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
+  if(containsPingsign)
+  {
+    float d[] = {
+        millis(),
+        computerLineMove
+    };
+    PrintData("", d, 2);
+  }
+*/
   bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
   if(containsCallsign)
   {
@@ -331,7 +343,7 @@ void PrintData(String callsign, float data[], int length){
     Serial.print(data[i]);
     Serial.print(", ");
   }
-  Serial.print("A"); // look idk man
+  //Serial.print("A"); // look idk man
 }
 
 int Normalize(float n){
