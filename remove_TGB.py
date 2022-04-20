@@ -9,7 +9,7 @@ with open("input.txt", "r") as input:
         # iterate all lines from file
         for line in input:
             #if "TGB" not in line.strip("\n"):
-                if "TGB" in line.strip("\n"):
+                if "TSB" not in line.strip("\n") and "TGB" not in line.strip("\n") and "TFB" not in line.strip("\n") and "ping" not in line.strip("\n"):
                     write_string = ""
                     for i, v in enumerate(line):
                         if v != " ":
