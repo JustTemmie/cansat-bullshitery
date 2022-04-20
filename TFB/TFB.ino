@@ -34,8 +34,8 @@ float ballX = 0, ballY = 0;
 int tileBallX, tileBallY;
 
 float angle = 45;
-float speed = 1;
 float xVel, yVel;
+#define speed 0.5
 #define delayTime 300
 
 int lLineTiles [lineWidth];
@@ -202,8 +202,8 @@ void SetupBall(){
   ballX = gridSizeX/2;
   ballY = gridSizeY/2;
   //set the velocity of the ball
-  xVel = cos(angle);
-  yVel = sin(angle);
+  xVel = cos(angle) * speed;
+  yVel = sin(angle) * speed;
 
   MoveLines();
   MoveBall();
@@ -276,8 +276,8 @@ float RandomAngle(float origAngle)
   int xVelAbs = Normalize(xVel);
   int yVelAbs = Normalize(yVel);
 
-  xVel = cos(angle) * xVelAbs;
-  yVel = sin(angle) * yVelAbs;
+  xVel = cos(angle) * xVelAbs * speed;
+  yVel = sin(angle) * yVelAbs * speed;
 
   return origAngle + n;
 }
