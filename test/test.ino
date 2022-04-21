@@ -13,5 +13,3 @@ void loop() {
     Serial.println();
 
 }
-
-// temmie also wrote this file even though it's litearlly 15 lines

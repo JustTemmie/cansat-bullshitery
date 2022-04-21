@@ -1,4 +1,4 @@
- class Tile {
+class Tile {
   public:
     bool isSolid = false;
 };
@@ -6,14 +6,14 @@
 //https://store.steampowered.com/app/1718240/Beaver_Clicker/
 #include <Wire.h>
 #include <SPI.h>
-//#include <Adafruit_BMP280.h>
+#include <Adafruit_BMP280.h>
 //#include <NMEAGPS.h>
 
 using namespace std;
 
-/*Adafruit_BMP280 bmp; // use I2C interface
+Adafruit_BMP280 bmp; // use I2C interface
 Adafruit_Sensor *bmp_temp = bmp.getTemperatureSensor();
-Adafruit_Sensor *bmp_pressure = bmp.getPressureSensor();*/
+Adafruit_Sensor *bmp_pressure = bmp.getPressureSensor();
 
 static const int RXPin = 4, TXPin = 3;
 
@@ -34,8 +34,8 @@ float ballX = 0, ballY = 0;
 int tileBallX, tileBallY;
 
 float angle = 45;
+float speed = 1;
 float xVel, yVel;
-#define speed 1
 #define delayTime 300
 
 int lLineTiles [lineWidth];
@@ -60,12 +60,12 @@ void setup() {
   }
   Serial.println("usb connected");
 
-  //InitBMP();
+  InitBMP();
 
   SetupMap();
   //pinMode(6, OUTPUT);
   Serial.println();
-  //Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude, Uptime");
+  Serial.println("Callsign, BMPTemp, LMTemp, NTCTemp, BMPPressure, MPXPressure, BMPCalculatedAltitude, Uptime");
   Serial.println("pong");
   Serial.println("PongCallsign, BallPosX, BallPosY, BallAngle, GroundPaddlePos, CansatPaddlePos");
   PrintMapData();
@@ -77,7 +77,7 @@ void PrintMapData()
   Serial.print("Line Size = "); Serial.println(lineWidth);
 }
 void loop() {
-  /*ReadBMP();
+  ReadBMP();
   float d[] = {
     temp,
     ReadLM(0, 1), //offset, sensitivity
@@ -87,7 +87,7 @@ void loop() {
     BMPAltutude(991),
     millis()
   };
-  PrintData(Callsign, d, 7);*/
+  PrintData(Callsign, d, 7);
 
   Communicate();
   MoveLines();
@@ -105,6 +105,60 @@ void loop() {
   };
   PrintData(pongCallsign, ballData, 6);
 }
+
+#pragma region primary
+void InitBMP() {
+  unsigned status;
+  status = bmp.begin();
+  if (!status) {
+    Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
+                      "try a different address!"));
+    while (1) delay(10);
+  }
+
+  /* Default settings from datasheet. */
+  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
+                  Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
+                  Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
+                  Adafruit_BMP280::FILTER_X16,      /* Filtering. */
+                  Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
+
+  bmp_temp->printSensorDetails();
+}
+
+void ReadBMP() {
+  float f = bmp.readTemperature();
+  
+  sensors_event_t temp_event, pressure_event;
+  bmp_temp->getEvent(&temp_event);
+  bmp_pressure->getEvent(&pressure_event);
+
+  temp = temp_event.temperature;
+  pressure = pressure_event.pressure;
+}
+float BMPAltutude(float seaPressure){
+  return bmp.readAltitude(seaPressure);
+}
+float ReadMPX() {
+  float volt = BitToVolt(1);
+  return 10*(volt/(0.009*5)+(0.095/0.009));
+}
+float ReadLM(float lmOffset, float lmSens){
+  float volt = BitToVolt(2);
+  return (volt - lmOffset)*lmSens;
+}
+float ReadNTC(float ntcOff, float ntcGrad) {
+  float bit = analogRead(A0);
+  float volt = BitToVolt(0);
+  return ntcOff + ntcGrad * volt;
+}
+
+float BitToVolt(int n){    //Function to convert raw ADC-data (0-255) to volt
+  int raw = analogRead(n);
+  float volt = (float)raw*5.000/1023;
+  return volt;
+}
+#pragma endregion primary
 
 #pragma region pong
 void SetupMap()
@@ -148,8 +202,8 @@ void SetupBall(){
   ballX = gridSizeX/2;
   ballY = gridSizeY/2;
   //set the velocity of the ball
-  xVel = cos(angle) * speed;
-  yVel = sin(angle) * speed;
+  xVel = cos(angle);
+  yVel = sin(angle);
 
   MoveLines();
   MoveBall();
@@ -168,6 +222,19 @@ void PrintMap() { //solely for debugging
 }
 
 void MoveBall(){
+  tiles[tileBallX][tileBallY].isSolid = false;
+  
+  /*//find the next position to check if there's a tile in the way
+  int nextXPos = (int)(ballX+xVel+0.5f);
+  if(tiles[nextXPos][tileBallY].isSolid) {
+    xVel *= -1;
+  }
+  int nextYPos = (int)(ballY+yVel+0.5f);
+  if(tiles[nextYPos][tileBallX].isSolid) {
+    yVel *= -1;
+  }*/
+  //move the ball
+
   float nextXPos = (ballX+xVel);
   float nextYPos = (ballY+yVel);
   if(nextYPos <= 1 || nextYPos >= gridSizeY-2)  // flip if next position is a wall
@@ -209,8 +276,8 @@ float RandomAngle(float origAngle)
   int xVelAbs = Normalize(xVel);
   int yVelAbs = Normalize(yVel);
 
-  xVel = cos(angle) * xVelAbs * speed;
-  yVel = sin(angle) * yVelAbs * speed;
+  xVel = cos(angle) * xVelAbs;
+  yVel = sin(angle) * yVelAbs;
 
   return origAngle + n;
 }
@@ -246,7 +313,7 @@ void Communicate() {
     val = val + (char)Serial.read(); // read data byte by byte and store it
     delay(1);
   }
-  /*bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
+  bool containsPingsign = val.indexOf("ping") >= 0; // check for the callsigs
   if(containsPingsign)
   {
     float d[] = {
@@ -254,24 +321,25 @@ void Communicate() {
     };
     PrintData("", d, 1);
     Serial.println(val);
-  }*/
-  //bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
+  }
+  bool containsCallsign = val.indexOf(comCallsign) >= 0; // check for the callsigs
   //Serial.print(val + "repeater");
   //bool containsCallsign = val.substring(0) == comCallsign; // check for the callsigs
-  //if(containsCallsign)
-
+  if(containsCallsign)
+  {
     //val.remove(0, 7);
     //val.remove(5,val.length()-5);
-    //val.remove(0, val.length()-11);
-    //Serial.println(val);
+    val.remove(0, val.length()-11);
+    Serial.println();
+    Serial.println(val);
     //val.remove(val.length()-1, 1);
     float n = val.toFloat(); // converts the input to a number (returns 0 if input was a string)
-    
     //Serial.print(n);
     //Serial.print(val);
     if (n != 0) {
       computerLineMove = (int)n;
     }
+  }
 }
 #pragma endregion pong
 
@@ -284,6 +352,7 @@ void PrintData(String callsign, float data[], int length){
     Serial.print(data[i]);
     Serial.print(", ");
   }
+  //Serial.print("A"); // look idk man
 }
 
 int Normalize(float n){
