@@ -222,19 +222,6 @@ void PrintMap() { //solely for debugging
 }
 
 void MoveBall(){
-  tiles[tileBallX][tileBallY].isSolid = false;
-  
-  /*//find the next position to check if there's a tile in the way
-  int nextXPos = (int)(ballX+xVel+0.5f);
-  if(tiles[nextXPos][tileBallY].isSolid) {
-    xVel *= -1;
-  }
-  int nextYPos = (int)(ballY+yVel+0.5f);
-  if(tiles[nextYPos][tileBallX].isSolid) {
-    yVel *= -1;
-  }*/
-  //move the ball
-
   float nextXPos = (ballX+xVel);
   float nextYPos = (ballY+yVel);
   if(nextYPos <= 1 || nextYPos >= gridSizeY-2)  // flip if next position is a wall
@@ -352,7 +339,6 @@ void PrintData(String callsign, float data[], int length){
     Serial.print(data[i]);
     Serial.print(", ");
   }
-  //Serial.print("A"); // look idk man
 }
 
 int Normalize(float n){
