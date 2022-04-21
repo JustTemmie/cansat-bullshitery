@@ -232,11 +232,11 @@ if __name__ == '__main__':
                 #checks where the ball is relative to the player's paddle
                 #also double checks that it's not moving the paddle out of bounds
                 if round(float(array[2])) < pos and pos > paddle_chonk+1:
-                    #pos -= 1
-                    pos = round(float(array[2]))
+                    pos -= 1
+                    #pos = round(float(array[2]))
                 elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
-                    #pos += 1
-                    pos = round(float(array[2]))
+                    pos += 1
+                    #pos = round(float(array[2]))
                 else:
                     pos += 0
             
