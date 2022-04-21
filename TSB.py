@@ -13,9 +13,9 @@ debug_info = False
 raw_debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
-rebooting = True
+rebooting = False
 
-device = "/dev/ttyACM5"
+device = "/dev/ttyACM1"
 input_device = "/dev/ttyUSB0"
 use_device_as_input = True # must be set to false for wireless
 ser_rate = 9600
@@ -31,8 +31,8 @@ rows = 15
 cols = 15
 paddle_chonk = 2 # having a paddle chonk of 2 would mean the paddle is 5 tall, the main point with two over and two under
 
-score_TFB = 0
-score_TSB = 0
+score_TFB = 1
+score_TSB = 2
 
 #declare a 2D array, this is used instead of a normal 1D array as the game is 2D and it's waaay easier
 arr = [[" " for i in range(rows)] for j in range(cols)]
@@ -230,8 +230,8 @@ if __name__ == '__main__':
         
         try:
             #print(array[2])
-            write_ball(float(array[1]), float(array[2]))
             write_paddles(round(float(array[5])), round(float(array[4]))) # TSB and TFB
+            write_ball(float(array[1]), float(array[2]))
         except:
             print("error in trying to update the board")
             #pass
@@ -241,11 +241,11 @@ if __name__ == '__main__':
                 #checks where the ball is relative to the player's paddle
                 #also double checks that it's not moving the paddle out of bounds
                 if round(float(array[2])) < pos and pos > paddle_chonk+1:
-                    #pos -= 1
-                    pos = round(float(array[2]))
+                    pos -= 1
+                    #pos = round(float(array[2]))
                 elif round(float(array[2])) > pos and pos < rows - paddle_chonk - 2:
-                    #pos += 1
-                    pos = round(float(array[2]))
+                    pos += 1
+                    #pos = round(float(array[2]))
                 else:
                     pos += 0
             
