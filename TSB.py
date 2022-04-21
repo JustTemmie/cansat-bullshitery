@@ -1,3 +1,8 @@
+
+
+# this is the code supposed to run on the laptop during the launch
+
+
 import serial
 from serial import Serial
 
