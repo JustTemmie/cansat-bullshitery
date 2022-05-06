@@ -8,8 +8,8 @@ with open("input.txt", "r") as input:
     with open("temp.txt", "w") as output:
         # iterate all lines from file
         for line in input:
-            if "TGB" not in line.strip("\n"):
-                if "TFB" in line.strip("\n"):
+            #if "TGB" not in line.strip("\n"):
+                if "TSB" in line.strip("\n") or "TGB" in line.strip("\n") or "TFB" in line.strip("\n") or "ping" in line.strip("\n"):
                     write_string = ""
                     for i, v in enumerate(line):
                         if v != " ":
@@ -17,8 +17,8 @@ with open("input.txt", "r") as input:
                             
                     output.write(write_string)
                 
-                else:
-                    output.write(line)
+                #else:
+                #    output.write(line)
 
 # replace file with original name
 os.replace('temp.txt', 'output.txt')

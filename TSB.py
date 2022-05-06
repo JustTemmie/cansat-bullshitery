@@ -1,3 +1,8 @@
+
+
+# this is the code supposed to run on the laptop during the launch
+
+
 import serial
 from serial import Serial
 
@@ -5,15 +10,19 @@ import time
 from datetime import date, datetime
 import random
 
+import os
+import sys
+
 print_axis = False
-debug_info = True
+debug_info = False
 raw_debug_info = False
 chonk_mode = False #chonk mode is made mostly as a joke, it just doubles the side of everything in both dimensions
 print_map = True
+rebooting = False
 
-device = "/dev/ttyACM5"
-input_device = "/dev/ttyUSB1"
-use_device_as_input = False # must be set to false for wireless
+device = "/dev/ttyACM1"
+input_device = "/dev/ttyUSB0"
+use_device_as_input = True # must be set to false for wireless
 ser_rate = 9600
 
 ball = "😳"
@@ -27,8 +36,8 @@ rows = 15
 cols = 15
 paddle_chonk = 2 # having a paddle chonk of 2 would mean the paddle is 5 tall, the main point with two over and two under
 
-score_TFB = 0
-score_TSB = 0
+score_TFB = 1
+score_TSB = 2
 
 #declare a 2D array, this is used instead of a normal 1D array as the game is 2D and it's waaay easier
 arr = [[" " for i in range(rows)] for j in range(cols)]
@@ -130,12 +139,14 @@ def get_input(device):
         decoded_bytes = (ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
         
         try:
-            # Open a file with access mode 'a'
-            file_object = open('cansat_output.txt', 'a')
-            # Append a string at the end of file
-            file_object.write(f"{decoded_bytes} \n")
-            # Close the file
-            file_object.close()
+            if decoded_bytes != None:
+                var = datetime.now().strftime("%H:%M.%S.%f")
+                # Open a file with access mode 'a'
+                write_file_object = open('cansat_output.txt', 'a')
+                # Append a string at the end of file
+                write_file_object.write(f"{var}, beav, {decoded_bytes} \n")
+                # Close the file
+                write_file_object.close()
 
         except Exception as e:
             print(f"error in writing to output.txt : {e}")
@@ -173,6 +184,8 @@ def get_input(device):
     
     
 if __name__ == '__main__': 
+    z = 0
+    
     clear_board()
 
     #declare variables that will be used in the future
@@ -187,7 +200,7 @@ if __name__ == '__main__':
     else:
         ser_input = serial.Serial(input_device, ser_rate)
     time.sleep(0.4)
-    print(ser.name)
+    #print(ser.name)
     
     # Open a file with access mode 'a'
     file_object = open('cansat_output.txt', 'a')
@@ -205,24 +218,25 @@ if __name__ == '__main__':
     while True:        
         
         clear_board()
-        time.sleep(0.15)
+        time.sleep(0.03)
         
-        
+        #write_file_object = open('cansat_output.txt', 'a')
         if debug_info:
             print("trying to get input")
+        #write_file_object.close()
         array = get_input(ser_input)
         #array = ["TGB", 8, 9, 40, 9, 2, "asd"]
         
         if debug_info:
             print(array)
         
-        time.sleep(0.15)
+        time.sleep(0.12)
         
         
         try:
             #print(array[2])
-            write_ball(float(array[1]), float(array[2]))
             write_paddles(round(float(array[5])), round(float(array[4]))) # TSB and TFB
+            write_ball(float(array[1]), float(array[2]))
         except:
             print("error in trying to update the board")
             #pass
@@ -264,8 +278,8 @@ if __name__ == '__main__':
             except:
                 pass
         
-        var = datetime.now().strftime("%H:%M.%S.%f")
-        output = f"TSB, {var}-0000{pos}beaver "
+        #var = datetime.now().strftime("%H:%M.%S.%f")
+        output = f"{pos}"#"TSB, {var}-0000{pos}beaver "
         if raw_debug_info:
             print(output)
         try:
@@ -280,8 +294,21 @@ if __name__ == '__main__':
 
         #prints the score and the game board
         
+        z += 1
         if print_map:
             print(f"TFB score = {score_TFB} and TSB score = {score_TSB}")
             print_game()
         else:
             print("-------------------------------------------------------------------------")
+
+        if rebooting:
+            if z >= 20:
+                os.execv(sys.executable, ['python3'] + sys.argv)
+                print("""
+                    
+                    -----------
+                    restarted
+                    -----------
+                    
+                    """
+                    )
